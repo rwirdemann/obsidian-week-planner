@@ -79,6 +79,10 @@ export default class WeekPlannerPlugin extends Plugin {
 	async createTomorrow() {
 		let date = new Date()
 		date.setDate(date.getDate() + 1);
+		while (!isWorkDay(date)) {
+			date.setDate(date.getDate() + 1);
+		}
+
 		let tomorrow = dateString(date) + "-" + getWeekday(date)
 		await this.createNewNote(tomorrow, 'Today', 'Days')
 	}
