@@ -44,6 +44,13 @@ export default class WeekPlannerPlugin extends Plugin {
 		});
 
 		this.addCommand({
+			id: 'week-planner-today',
+			name: 'Show Yesterday',
+			callback: () => this.createYesterday(),
+			hotkeys: []
+		});
+
+		this.addCommand({
 			id: 'week-planner-tomorrow',
 			name: 'Show Tomorrow',
 			callback: () => this.createTomorrow(),
@@ -74,6 +81,18 @@ export default class WeekPlannerPlugin extends Plugin {
 		date.setDate(date.getDate() + 1);
 		let tomorrow = dateString(date) + "-" + getWeekday(date)
 		await this.createNewNote(tomorrow, 'Today', 'Days')
+	}
+
+	async createYesterday() {
+		let date = new Date()
+		date.setDate(date.getDate() - 1);
+
+		while (!isWorkDay(date)) {
+			date.setDate(date.getDate() - 1);
+		}
+
+		let yesterday = dateString(date) + "-" + getWeekday(date)
+		await this.createNewNote(yesterday, 'Today', 'Days')
 	}
 
 	async createNewNote(input: string, header: string, subdir?: string): Promise<void> {
@@ -114,6 +133,10 @@ export default class WeekPlannerPlugin extends Plugin {
 	async saveSettings() {
 		await this.saveData(this.settings);
 	}
+}
+
+function isWorkDay(date: Date) {
+	return date.getDay() > 0 && date.getDay() < 6
 }
 
 function dateString(date: Date) {
