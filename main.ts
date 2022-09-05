@@ -39,7 +39,7 @@ export default class WeekPlannerPlugin extends Plugin {
 		this.addCommand({
 			id: 'week-planner-today',
 			name: 'Show Today',
-			callback: () => this.createNewNote('2022-09-05-Monday', 'Today', 'Days'),
+			callback: () => this.createToday(),
 			hotkeys: []
 		});
 
@@ -56,6 +56,12 @@ export default class WeekPlannerPlugin extends Plugin {
 		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
 	}
 
+	async createToday() {
+		let date = new Date()
+		let today = todayString(date) + "-" + getWeekday(date)
+		await this.createNewNote(today, 'Today', 'Days')
+	}
+
 	async createNewNote(input: string, header: string, subdir?: string): Promise<void> {
 		if (typeof subdir !== 'undefined') {
 			const subDirectoryExists = await this.app.vault.adapter.exists('Week Planner/' + subdir);
@@ -70,7 +76,7 @@ export default class WeekPlannerPlugin extends Plugin {
 			await this.app.vault.createFolder(directoryPath)
 		}
 
-		var fullFileName = ""
+		let fullFileName = "";
 		if (typeof subdir !== 'undefined') {
 			fullFileName = 'Week Planner/' + subdir + '/' + input
 		} else {
@@ -81,11 +87,10 @@ export default class WeekPlannerPlugin extends Plugin {
 		if (!fileExists) {
 			await this.app.vault.create(fullFileName + '.md', '## ' + header)
 		}
-		this.app.workspace.openLinkText(fullFileName, '', false)
+		await this.app.workspace.openLinkText(fullFileName, '', false)
 	}
 
 	onunload() {
-
 	}
 
 	async loadSettings() {
@@ -95,6 +100,23 @@ export default class WeekPlannerPlugin extends Plugin {
 	async saveSettings() {
 		await this.saveData(this.settings);
 	}
+}
+
+function todayString(date: Date) {
+	return [
+		date.getFullYear(),
+		padTo2Digits(date.getMonth() + 1),
+		padTo2Digits(date.getDate()),
+	].join('-')
+}
+
+function padTo2Digits(num: number) {
+	return num.toString().padStart(2, '0');
+}
+
+function getWeekday(date: Date) {
+	const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+	return weekday[date.getDay()];
 }
 
 class SampleModal extends Modal {
