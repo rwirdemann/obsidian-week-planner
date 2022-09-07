@@ -1,5 +1,6 @@
 import {App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting} from 'obsidian';
 import WeekPlannerFile, {dateString, getInboxFileName, getTodayFileName, getWeekday} from "./src/file";
+import {TODO_PREFIX} from "./src/constants";
 
 interface WeekPlannerPluginSettings {
 	mySetting: string;
@@ -114,9 +115,10 @@ export default class WeekPlannerPlugin extends Plugin {
 
 		const line = editor.getCursor().line
 		let todo = await inbox.getLineAt(line)
-
-		await today.insertAt(todo, 1)
-		await inbox.deleteLineAt(line)
+		if (todo.startsWith(TODO_PREFIX)) {
+			await today.insertAt(todo, 1)
+			await inbox.deleteLineAt(line)
+		}
 	}
 
 	async createNewNote(input: string, header: string, subdir?: string): Promise<void> {
