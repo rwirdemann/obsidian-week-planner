@@ -1,4 +1,6 @@
 import {App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting} from 'obsidian';
+import DayPlannerFile from './src/file';
+import WeekPlannerFile from "./src/file";
 
 interface WeekPlannerPluginSettings {
 	mySetting: string;
@@ -59,7 +61,7 @@ export default class WeekPlannerPlugin extends Plugin {
 
 		this.addCommand({
 			id: 'move-to-today',
-			name: 'Move Task to Today',
+			name: 'Move task to today',
 			editorCallback: (editor: Editor, view: MarkdownView) => {
 				this.moveToToday(editor)
 			}
@@ -112,17 +114,9 @@ export default class WeekPlannerPlugin extends Plugin {
 		let today = dateString(date) + "-" + getWeekday(date)
 		let fullFileName = 'Week Planner/Days/' + today + ".md"
 
+		let file = new WeekPlannerFile(this.app.vault, fullFileName);
 		let selection = editor.getSelection().replace(/[\r\n]/gm, '');
-
-		let filecontent = await (await this.getFileContents(fullFileName))
-		if (filecontent == undefined) {
-			console.log('could not read file');
-			return
-		}
-
-		let todos = filecontent.split('\n')
-		todos.splice(1, 0, selection)
-		await this.updateFile(fullFileName, todos.join('\n'));
+		await file.insertAt(selection, 1)
 		editor.replaceSelection('');
 	}
 
