@@ -1,4 +1,4 @@
-import {App, Editor, MarkdownView, Menu, Modal, Notice, Plugin, PluginSettingTab, Setting} from 'obsidian';
+import {App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting} from 'obsidian';
 import WeekPlannerFile, {dateString, getInboxFileName, getTodayFileName, getWeekday} from "./src/file";
 import {TODO_PREFIX} from "./src/constants";
 
@@ -23,17 +23,6 @@ export default class WeekPlannerPlugin extends Plugin {
 		});
 		// Perform additional things with the ribbon
 		ribbonIconEl.addClass('my-plugin-ribbon-class');
-
-		const menu = new Menu(this.app);
-
-		menu.addItem((item) =>
-			item
-				.setTitle("Copy")
-				.setIcon("documents")
-				.onClick(() => {
-					new Notice("Copied");
-				})
-		);
 
 		this.addCommand({
 			id: 'week-planner-inbox',
