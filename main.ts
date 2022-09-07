@@ -1,6 +1,5 @@
 import {App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting} from 'obsidian';
-import DayPlannerFile from './src/file';
-import WeekPlannerFile from "./src/file";
+import WeekPlannerFile, {dateString, getInboxFileName, getTodayFileName, getWeekday} from "./src/file";
 
 interface WeekPlannerPluginSettings {
 	mySetting: string;
@@ -110,14 +109,14 @@ export default class WeekPlannerPlugin extends Plugin {
 	}
 
 	async moveToToday(editor: Editor) {
-		let date = new Date()
-		let today = dateString(date) + "-" + getWeekday(date)
-		let fullFileName = 'Week Planner/Days/' + today + ".md"
+		let inbox = new WeekPlannerFile(this.app.vault, getInboxFileName());
+		let today = new WeekPlannerFile(this.app.vault, getTodayFileName(new Date()));
 
-		let file = new WeekPlannerFile(this.app.vault, fullFileName);
-		let selection = editor.getSelection().replace(/[\r\n]/gm, '');
-		await file.insertAt(selection, 1)
-		editor.replaceSelection('');
+		const line = editor.getCursor().line
+		let todo = await inbox.getLineAt(line)
+
+		await today.insertAt(todo, 1)
+		await inbox.deleteLineAt(line)
 	}
 
 	async createNewNote(input: string, header: string, subdir?: string): Promise<void> {
@@ -178,23 +177,6 @@ export default class WeekPlannerPlugin extends Plugin {
 
 function isWorkDay(date: Date) {
 	return date.getDay() > 0 && date.getDay() < 6
-}
-
-function dateString(date: Date) {
-	return [
-		date.getFullYear(),
-		padTo2Digits(date.getMonth() + 1),
-		padTo2Digits(date.getDate()),
-	].join('-')
-}
-
-function padTo2Digits(num: number) {
-	return num.toString().padStart(2, '0');
-}
-
-function getWeekday(date: Date) {
-	const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-	return weekday[date.getDay()];
 }
 
 class SampleModal extends Modal {
