@@ -1,5 +1,12 @@
 import {App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting} from 'obsidian';
-import WeekPlannerFile, {dateString, getInboxFileName, getTodayFileName, getWeekday} from "./src/file";
+import WeekPlannerFile, {
+	dateString,
+	getInboxFileName,
+	getTodayFileName,
+	getWeekday,
+	getWeekFileName,
+	weekNumber
+} from "./src/file";
 import {TODO_PREFIX} from "./src/constants";
 
 interface WeekPlannerPluginSettings {
@@ -26,7 +33,7 @@ export default class WeekPlannerPlugin extends Plugin {
 		this.addCommand({
 			id: 'week-planner-week',
 			name: 'Show Week',
-			callback: () => this.createNewNote('Calweek-2022-36', 'Goals of Calendar Week 36', 'Weeks'),
+			callback: () => this.createWeek(),
 			hotkeys: []
 		});
 
@@ -70,6 +77,12 @@ export default class WeekPlannerPlugin extends Plugin {
 
 		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
 		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
+	}
+
+	async createWeek() {
+		const date = new Date()
+		let weekFile = new WeekPlannerFile(this.app.vault, getWeekFileName(date));
+		await weekFile.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, 'Goals of Week ' + weekNumber(date))
 	}
 
 	async createToday() {
