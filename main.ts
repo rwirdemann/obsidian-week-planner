@@ -16,14 +16,6 @@ export default class WeekPlannerPlugin extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
-		// This creates an icon in the left ribbon.
-		const ribbonIconEl = this.addRibbonIcon('dice', 'Week Planner', (evt: MouseEvent) => {
-			// Called when the user clicks the icon.
-			new Notice('This is a notice!');
-		});
-		// Perform additional things with the ribbon
-		ribbonIconEl.addClass('my-plugin-ribbon-class');
-
 		this.addCommand({
 			id: 'week-planner-inbox',
 			name: 'Show Inbox',
@@ -149,7 +141,7 @@ export default class WeekPlannerPlugin extends Plugin {
 		await this.app.workspace.openLinkText(fullFileName, '', false)
 	}
 
-	async getFileContents(fileName: string){
+	async getFileContents(fileName: string) {
 		try {
 			return await this.app.vault.adapter.read(fileName);
 		} catch (error) {
@@ -157,7 +149,7 @@ export default class WeekPlannerPlugin extends Plugin {
 		}
 	}
 
-	async updateFile(fileName: string, fileContents: string){
+	async updateFile(fileName: string, fileContents: string) {
 		try {
 			return await this.app.vault.adapter.write(fileName, fileContents);
 		} catch (error) {
