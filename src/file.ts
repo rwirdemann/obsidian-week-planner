@@ -1,5 +1,6 @@
 import {Vault, Workspace} from 'obsidian';
 import {WEEK_PLANNER_BASE_DIR, WEEK_PLANNER_DAYS_DIR, WEEK_WEEK_DIR} from "./constants";
+import * as path from 'path';
 
 export default class WeekPlannerFile {
 	vault: Vault;
@@ -62,6 +63,7 @@ export default class WeekPlannerFile {
 	async createIfNotExistsAndOpen(vault: Vault, workspace: Workspace, header: String) {
 		const fileExists = await vault.adapter.exists(this.fullFileName);
 		if (!fileExists) {
+			await this.ensureDirectories(vault)
 			await vault.create(this.fullFileName, '## ' + header)
 		}
 
@@ -70,6 +72,19 @@ export default class WeekPlannerFile {
 
 	obsidianFile(filename: string) {
 		return filename.replace('.md', '');
+	}
+
+	async ensureDirectories(vault: Vault, ) {
+		const directories = this.fullFileName.split(path.sep)
+		let directoryPath = ""
+		for(let i=0; i < directories.length-1; i++) {
+			directoryPath = directoryPath + directories[i] + path.sep
+			console.log('dir path:' + directoryPath)
+			const directoryExists = await vault.adapter.exists(directoryPath);
+			if (!directoryExists) {
+				await vault.createFolder(directoryPath)
+			}
+		}
 	}
 }
 
