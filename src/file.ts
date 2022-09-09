@@ -73,6 +73,14 @@ export default class WeekPlannerFile {
 	}
 }
 
+export function extendFileName(filename?: string) {
+	if (filename == 'Inbox.md') {
+		return WEEK_PLANNER_BASE_DIR + '/' + 'Inbox.md'
+	} else {
+		return WEEK_PLANNER_BASE_DIR + '/' + WEEK_PLANNER_DAYS_DIR + '/' + filename
+	}
+}
+
 export function getInboxFileName() {
 	return WEEK_PLANNER_BASE_DIR + '/' + 'Inbox.md'
 }
