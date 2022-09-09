@@ -104,6 +104,10 @@ export function getTodayFileName(date: Date) {
 	return WEEK_PLANNER_BASE_DIR + '/' + WEEK_PLANNER_DAYS_DIR + '/' + dateString(date) + "-" + getWeekday(date) + '.md'
 }
 
+export function getTodayFileHeader(date: Date) {
+	return dateString(date) + "-" + getWeekday(date)
+}
+
 export function getWeekFileName(date: Date) {
 	const year = date.getFullYear()
 	return WEEK_PLANNER_BASE_DIR + '/' + WEEK_WEEK_DIR + '/Calweek-' + year + '-' + weekNumber(date) + '.md'
