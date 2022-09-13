@@ -70,6 +70,14 @@ export default class WeekPlannerPlugin extends Plugin {
 			}
 		});
 
+		this.addCommand({
+			id: 'move-to-inbox',
+			name: 'Move to Inbox',
+			editorCallback: (editor: Editor, view: MarkdownView) => {
+				this.moveTaskToInbox(editor)
+			}
+		});
+
 		this.addSettingTab(new WeekPlannerSettingTab(this.app, this));
 	}
 
@@ -122,15 +130,24 @@ export default class WeekPlannerPlugin extends Plugin {
 		}
 
 		let dest = new WeekPlannerFile(this.app.vault, destFileName);
+		await this.move(editor, source, dest, header)
+	}
+	
+	async move(editor: Editor, source: WeekPlannerFile, dest: WeekPlannerFile, header: String) {
 		await dest.createIfNotExists(this.app.vault, this.app.workspace, header)
-
 		const line = editor.getCursor().line
 		let todo = await source.getLineAt(line)
 		if (todo.startsWith(TODO_PREFIX) || todo.startsWith(TODO_DONE_PREFIX)) {
-			console.log('line: ' + todo)
 			await dest.insertAt(todo, 1)
 			await source.deleteLineAt(line)
 		}
+	}
+
+	async moveTaskToInbox(editor: Editor) {
+		let sourceFileName = extendFileName(this.app.workspace.getActiveFile()?.name)
+		let source = new WeekPlannerFile(this.app.vault, sourceFileName);
+		let dest = new WeekPlannerFile(this.app.vault, getInboxFileName());
+		await this.move(editor, source, dest, 'Inbox')
 	}
 
 	onunload() {
