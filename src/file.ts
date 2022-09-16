@@ -167,10 +167,10 @@ export function getCurrentWorkdayDate() {
 	return date
 }
 
-export function getTomorrowDate() {
+export function getTomorrowDate(workingDays: string) {
 	let date = new Date()
 	date.setDate(date.getDate() + 1);
-	while (!isWorkDay(date)) {
+	while (!isWorkDay(date, workingDays)) {
 		date.setDate(date.getDate() + 1);
 	}
 	return date
@@ -185,6 +185,46 @@ export function getYesterdayDate() {
 	return date
 }
 
-function isWorkDay(date: Date) {
-	return date.getDay() > 0 && date.getDay() < 6
+function isWorkDay(date: Date, workingDays?: string) {
+	if (workingDays === undefined) {
+		return date.getDay() > 0 && date.getDay() < 6
+	}
+
+	let allowedDays = map(workingDays)
+	console.log('allowed days:' + allowedDays)
+	return allowedDays.contains(date.getDay())
+}
+
+const DAYS_TO_NUMBER = new Map<string, number>([
+	['sun', 0],
+	['mon', 1],
+	['tue', 2],
+	['wed', 3],
+	['thu', 4],
+	['fri', 5],
+	['sat', 6],
+]);
+
+function map(workingDays: string) {
+	const days: number[] = [];
+	workingDays.split(',').forEach((d) => {
+		const day = DAYS_TO_NUMBER.get(d.toLowerCase().trim())
+		if (day != undefined) {
+			days.push(day)
+		}
+	});
+	return days
+}
+
+export function isValidWorkingDaysString(value: string) {
+	if (value == undefined || value.trim() == '') {
+		console.log("working day string undefined or empty")
+		return false
+	}
+
+	return allDaysValid(value.split(','));
+}
+
+function allDaysValid(days: string[]) {
+	return days.every(function (d) { return DAYS_TO_NUMBER.get(d.toLowerCase().trim()) != undefined; });
 }
