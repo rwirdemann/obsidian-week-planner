@@ -45,11 +45,7 @@ export default class WeekPlannerFile {
 	}
 
 	async getFileContents() {
-		try {
-			return await this.vault.adapter.read(this.fullFileName);
-		} catch (error) {
-			console.log(error)
-		}
+		return await this.vault.adapter.read(this.fullFileName);
 	}
 
 	async updateFile(fileContents: string) {
