@@ -1,9 +1,9 @@
-import { Vault, Workspace, normalizePath } from 'obsidian';
+import { EditorPosition, Vault, Editor, Workspace, normalizePath } from 'obsidian';
 import { WEEK_PLANNER_BASE_DIR, WEEK_PLANNER_DAYS_DIR, WEEK_WEEK_DIR } from "./constants";
 import * as path from 'path';
 
 export default class WeekPlannerFile {
-	vault: Vault;
+	vault: Vault
 	fullFileName: string
 
 	constructor(vault: Vault, fullFileName: string) {
@@ -16,10 +16,10 @@ export default class WeekPlannerFile {
 		return todos[at]
 	}
 
-	async deleteLineAt(at: number) {
-		let todos = await this.getTodos()
-		todos.splice(at, 1)
-		await this.updateFile(todos.join('\n'));
+	async deleteLine(line: number, s: string, editor: Editor) {
+		let from: EditorPosition = { line: line, ch: 0 };
+		let to: EditorPosition = { line: line, ch: s.length + path.sep.length};
+		editor.replaceRange('', from, to)
 	}
 
 	async insertAt(line: string, at: number) {
