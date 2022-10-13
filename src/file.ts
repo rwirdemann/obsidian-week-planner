@@ -10,12 +10,6 @@ export default class WeekPlannerFile {
 		this.vault = vault;
 		this.fullFileName = fullFileName
 	}
-
-	async getLineAt(at: number) {
-		let todos = await this.getTodos()
-		return todos[at]
-	}
-
 	async deleteLine(line: number, s: string, editor: Editor) {
 		let from: EditorPosition = { line: line, ch: 0 };		
 		
@@ -30,13 +24,13 @@ export default class WeekPlannerFile {
 	}
 
 	async insertAt(line: string, at: number) {
-		let filecontent = await this.getFileContents()
-		if (filecontent == undefined) {
+		let filecontents = await this.getFileContents()
+		if (filecontents == undefined) {
 			console.log('could not read file');
 			return
 		}
 
-		let todos = filecontent.split('\n')
+		let todos = filecontents.split('\n')
 		todos.splice(at, 0, line)
 		await this.updateFile(todos.join('\n'));
 	}
