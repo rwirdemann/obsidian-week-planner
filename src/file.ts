@@ -17,8 +17,15 @@ export default class WeekPlannerFile {
 	}
 
 	async deleteLine(line: number, s: string, editor: Editor) {
-		let from: EditorPosition = { line: line, ch: 0 };
-		let to: EditorPosition = { line: line, ch: s.length + path.sep.length};
+		let from: EditorPosition = { line: line, ch: 0 };		
+		
+		// replace trailing newline only if the line to delete isn't the last one
+		let delta = 0
+		if (line < editor.lastLine()) {
+			delta = path.sep.length
+		}
+
+		let to: EditorPosition = { line: line, ch: s.length + delta};
 		editor.replaceRange('', from, to)
 	}
 
@@ -59,7 +66,7 @@ export default class WeekPlannerFile {
 	async createIfNotExists(vault: Vault, workspace: Workspace, header: String) {
 		const fileExists = await vault.adapter.exists(this.fullFileName);
 		if (!fileExists) {
-			await this.ensureDirectories(vault)
+			await this.ensureDirectories()
 			await vault.create(this.fullFileName, '## ' + header)
 		}
 	}
@@ -87,7 +94,7 @@ export default class WeekPlannerFile {
 		return this.fullFileName.endsWith(dateString(date) + '-' + getWeekday(date) + '.md')
 	}
 
-	async ensureDirectories(vault: Vault) {
+	async ensureDirectories() {
 		const directories = this.fullFileName.split(path.sep)
 		let directoryPath = ""
 		for (let i = 0; i < directories.length - 1; i++) {
