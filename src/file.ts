@@ -1,4 +1,4 @@
-import { EditorPosition, Vault, Editor, Workspace, normalizePath } from 'obsidian';
+import {EditorPosition, Vault, Editor, Workspace, normalizePath, moment} from 'obsidian';
 import { WEEK_PLANNER_BASE_DIR, WEEK_PLANNER_DAYS_DIR, WEEK_WEEK_DIR } from "./constants";
 import * as path from 'path';
 
@@ -171,12 +171,11 @@ export function getCurrentWorkdayDate() {
 }
 
 export function getTomorrowDate(workingDays: string) {
-	let date = new Date()
-	date.setDate(date.getDate() + 1);
-	while (!isWorkDay(date, workingDays)) {
-		date.setDate(date.getDate() + 1);
+	let tomorrow  = moment().add(1,'days');
+	while (!isWorkDay(tomorrow.toDate(), workingDays)) {
+		tomorrow  = moment().add(1,'days');
 	}
-	return date
+	return tomorrow.toDate()
 }
 
 export function getYesterdayDate() {
