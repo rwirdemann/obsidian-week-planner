@@ -32,8 +32,13 @@ export default class WeekPlannerPlugin extends Plugin {
 			id: "add-todo",
 			name: "Add Todo",
 			callback: () => {
-				new TodoModal(this.app, (result) => {
-					new Notice(`Hello, ${result}!`);
+				new TodoModal(this.app, (result, targetList) => {
+					new Notice(`Hello, ${targetList}!`);
+					if (targetList == 'inbox') {
+						this.insertIntoInbox(TODO_PREFIX + result)
+					} else if (targetList == 'today') {
+						this.insertIntoToday(TODO_PREFIX + result)
+					}
 				}).open();
 			},
 		});
@@ -92,9 +97,22 @@ export default class WeekPlannerPlugin extends Plugin {
 		this.addSettingTab(new WeekPlannerSettingTab(this.app, this));
 	}
 
+	async insertIntoToday(todo: string) {
+		let date = new Date()
+		let today = new WeekPlannerFile(this.app.vault, getDayFileName(date));
+		await today.createIfNotExists(this.app.vault, this.app.workspace, getDayFileHeader(date))
+		await today.insertAt(todo, 1)
+    }
+
+	async insertIntoInbox(todo: string) {
+		let inbox = new WeekPlannerFile(this.app.vault, getInboxFileName());
+		await inbox.createIfNotExists(this.app.vault, this.app.workspace, 'Inbox')
+		await inbox.insertAt(todo, 1)
+	}
+
 	async createInbox() {
-		let weekFile = new WeekPlannerFile(this.app.vault, getInboxFileName());
-		await weekFile.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, 'Inbox')
+		let file = new WeekPlannerFile(this.app.vault, getInboxFileName());
+		await file.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, 'Inbox')
 	}
 
 	async createWeek() {
