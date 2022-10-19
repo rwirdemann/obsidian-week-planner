@@ -130,7 +130,7 @@ export default class WeekPlannerPlugin extends Plugin {
 	async createTomorrow() {
 		let date = getTomorrowDate(this.settings.workingDays)
 		let file = new WeekPlannerFile(this.app.vault, getDayFileName(date));
-		await file.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, getDayFileHeader(date))
+		await file.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, 'Inbox')
 	}
 
 	async createYesterday() {
