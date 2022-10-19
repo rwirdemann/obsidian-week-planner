@@ -110,18 +110,18 @@ export default class WeekPlannerFile {
 
 export function extendFileName(filename?: string) {
 	if (filename == 'Inbox.md') {
-		return WEEK_PLANNER_BASE_DIR + '/' + 'Inbox.md'
+		return WEEK_PLANNER_BASE_DIR + path.sep + 'Inbox.md'
 	} else {
-		return WEEK_PLANNER_BASE_DIR + '/' + WEEK_PLANNER_DAYS_DIR + '/' + filename
+		return WEEK_PLANNER_BASE_DIR + path.sep + WEEK_PLANNER_DAYS_DIR + path.sep + filename
 	}
 }
 
 export function getInboxFileName() {
-	return WEEK_PLANNER_BASE_DIR + '/' + 'Inbox.md'
+	return WEEK_PLANNER_BASE_DIR + path.sep + 'Inbox.md'
 }
 
 export function getDayFileName(date: Date) {
-	return WEEK_PLANNER_BASE_DIR + '/' + WEEK_PLANNER_DAYS_DIR + '/' + dateString(date) + "-" + getWeekday(date) + '.md'
+	return WEEK_PLANNER_BASE_DIR + path.sep + WEEK_PLANNER_DAYS_DIR + path.sep + dateString(date) + "-" + getWeekday(date) + '.md'
 }
 
 export function getDayFileHeader(date: Date) {
@@ -130,7 +130,7 @@ export function getDayFileHeader(date: Date) {
 
 export function getWeekFileName(date: Date) {
 	const year = date.getFullYear()
-	return WEEK_PLANNER_BASE_DIR + '/' + WEEK_WEEK_DIR + '/Calweek-' + year + '-' + weekNumber(date) + '.md'
+	return WEEK_PLANNER_BASE_DIR + '/' + WEEK_WEEK_DIR + path.sep + 'Calweek-' + year + '-' + weekNumber(date) + '.md'
 }
 
 export function weekNumber(date: Date) {
