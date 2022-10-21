@@ -32,12 +32,11 @@ export default class WeekPlannerPlugin extends Plugin {
 			id: "add-todo",
 			name: "Add Todo",
 			callback: () => {
-				new TodoModal(this.app, (result, targetList) => {
-					new Notice(`Hello, ${targetList}!`);
+				new TodoModal(this.app, (result, targetList, targetDate) => {
 					if (targetList == 'inbox') {
 						this.insertIntoInbox(TODO_PREFIX + result)
-					} else if (targetList == 'today') {
-						this.insertIntoToday(TODO_PREFIX + result)
+					} else if (targetList == 'target-date') {
+						this.insertIntoTargetDate(targetDate, TODO_PREFIX + result)
 					}
 				}).open();
 			},
@@ -95,6 +94,12 @@ export default class WeekPlannerPlugin extends Plugin {
 		});
 
 		this.addSettingTab(new WeekPlannerSettingTab(this.app, this));
+	}
+
+	async insertIntoTargetDate(date: Date, todo: string) {
+		let today = new WeekPlannerFile(this.app.vault, getDayFileName(date));
+		await today.createIfNotExists(this.app.vault, this.app.workspace, getDayFileHeader(date))
+		await today.insertAt(todo, 1)
 	}
 
 	async insertIntoToday(todo: string) {
