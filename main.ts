@@ -5,13 +5,13 @@ import WeekPlannerFile, {
 	getDayFileHeader,
 	getDayFileName,
 	getWeekFileName,
-	weekNumber,
 	getTomorrowDate,
 	getYesterdayDate,
-	getCurrentWorkdayDate,
+	getNextWorkingDay,
 	isValidWorkingDaysString
 } from "./src/file";
 import {TODO_DONE_PREFIX, TODO_PREFIX} from "./src/constants";
+import {getCalendarWeek} from "./src/date";
 
 interface WeekPlannerPluginSettings {
 	workingDays: string;
@@ -89,7 +89,7 @@ export default class WeekPlannerPlugin extends Plugin {
 	async createWeek() {
 		const date = new Date()
 		let weekFile = new WeekPlannerFile(this.app.vault, getWeekFileName(date));
-		await weekFile.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, 'Goals of Week ' + weekNumber(date))
+		await weekFile.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, 'Goals of Week ' + getCalendarWeek(date))
 	}
 
 	async createToday() {
@@ -117,7 +117,7 @@ export default class WeekPlannerPlugin extends Plugin {
 		let destFileName = ""
 		let header = ""
 		if (source.isInbox() || source.isYesterday()) {
-			const date = getCurrentWorkdayDate()
+			const date = getNextWorkingDay()
 			destFileName = getDayFileName(date)
 			header = getDayFileHeader(date)
 		} else if (source.isToday()) {
@@ -132,7 +132,7 @@ export default class WeekPlannerPlugin extends Plugin {
 		await this.move(editor, source, dest, header)
 	}
 
-	async move(editor: Editor, source: WeekPlannerFile, dest: WeekPlannerFile, header: String) {
+	async move(editor: Editor, source: WeekPlannerFile, dest: WeekPlannerFile, header: string) {
 		await dest.createIfNotExists(this.app.vault, this.app.workspace, header)
 		const line = editor.getCursor().line
 		let todo = editor.getLine(line)

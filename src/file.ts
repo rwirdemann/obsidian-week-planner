@@ -1,6 +1,7 @@
 import {EditorPosition, Vault, Editor, Workspace, normalizePath, moment} from 'obsidian';
 import { WEEK_PLANNER_BASE_DIR, WEEK_PLANNER_DAYS_DIR, WEEK_WEEK_DIR } from "./constants";
 import * as path from 'path';
+import {allDaysValid, getWeekday, isWorkingDay, getCalendarWeek, dateString, dateString} from "./date";
 
 export default class WeekPlannerFile {
 	vault: Vault
@@ -79,13 +80,13 @@ export default class WeekPlannerFile {
 	}
 
 	isToday() {
-		const date = new Date()
-		return this.fullFileName.endsWith(dateString(date) + '-' + getWeekday(date) + '.md')
+		const d = new Date()
+		return this.fullFileName.endsWith(dateString(moment(d)) + '-' + getWeekday(d) + '.md')
 	}
 
 	isYesterday() {
-		const date = getYesterdayDate()
-		return this.fullFileName.endsWith(dateString(date) + '-' + getWeekday(date) + '.md')
+		const d = getYesterdayDate()
+		return this.fullFileName.endsWith(dateString(moment(d)) + '-' + getWeekday(d) + '.md')
 	}
 
 	async ensureDirectories() {
@@ -121,44 +122,21 @@ export function getInboxFileName() {
 }
 
 export function getDayFileName(date: Date) {
-	return WEEK_PLANNER_BASE_DIR + '/' + WEEK_PLANNER_DAYS_DIR + '/' + dateString(date) + "-" + getWeekday(date) + '.md'
+	return WEEK_PLANNER_BASE_DIR + '/' + WEEK_PLANNER_DAYS_DIR + '/' + dateString(moment(date)) + "-" + getWeekday(date) + '.md'
 }
 
 export function getDayFileHeader(date: Date) {
-	return dateString(date) + "-" + getWeekday(date)
+	return dateString(moment(date)) + "-" + getWeekday(date)
 }
 
 export function getWeekFileName(date: Date) {
 	const year = date.getFullYear()
-	return WEEK_PLANNER_BASE_DIR + '/' + WEEK_WEEK_DIR + '/' + 'Calweek-' + year + '-' + weekNumber(date) + '.md'
+	return WEEK_PLANNER_BASE_DIR + '/' + WEEK_WEEK_DIR + '/' + 'Calweek-' + year + '-' + getCalendarWeek(date) + '.md'
 }
 
-export function weekNumber(date: Date) {
-	const startDate = new Date(date.getFullYear(), 0, 1);
-	const days = Math.floor((date.valueOf() - startDate.valueOf()) / (24 * 60 * 60 * 1000));
-	return Math.ceil(days / 7);
-}
-
-export function dateString(date: Date) {
-	return [
-		date.getFullYear(),
-		padTo2Digits(date.getMonth() + 1),
-		padTo2Digits(date.getDate()),
-	].join('-')
-}
-
-function padTo2Digits(num: number) {
-	return num.toString().padStart(2, '0');
-}
-
-export function getWeekday(date: Date) {
-	const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-	return weekday[date.getDay()];
-}
-
-export function getCurrentWorkdayDate() {
+export function getNextWorkingDay() {
 	const date = new Date()
-	while (!isWorkDay(date)) {
+	while (!isWorkingDay(date)) {
 		date.setDate(date.getDate() + 1);
 	}
 	return date
@@ -166,7 +144,7 @@ export function getCurrentWorkdayDate() {
 
 export function getTomorrowDate(workingDays: string) {
 	let tomorrow  = moment().add(1,'days');
-	while (!isWorkDay(tomorrow.toDate(), workingDays)) {
+	while (!isWorkingDay(tomorrow.toDate(), workingDays)) {
 		tomorrow  = moment(tomorrow).add(1,'days');
 	}
 	return tomorrow.toDate()
@@ -175,40 +153,10 @@ export function getTomorrowDate(workingDays: string) {
 export function getYesterdayDate() {
 	const date = new Date()
 	date.setDate(date.getDate() - 1);
-	while (!isWorkDay(date)) {
+	while (!isWorkingDay(date)) {
 		date.setDate(date.getDate() - 1);
 	}
 	return date
-}
-
-export function isWorkDay(date: Date, workingDays?: string) {
-	if (workingDays === undefined) {
-		return date.getDay() > 0 && date.getDay() < 6
-	}
-
-	const allowedDays = mapToNumbersArray(workingDays)
-	return allowedDays.contains(date.getDay())
-}
-
-const DAYS_TO_NUMBER = new Map<string, number>([
-	['sun', 0],
-	['mon', 1],
-	['tue', 2],
-	['wed', 3],
-	['thu', 4],
-	['fri', 5],
-	['sat', 6],
-]);
-
-function mapToNumbersArray(workingDays: string) {
-	const days: number[] = [];
-	workingDays.split(',').forEach((d) => {
-		const day = DAYS_TO_NUMBER.get(d.toLowerCase().trim())
-		if (day != undefined) {
-			days.push(day)
-		}
-	});
-	return days
 }
 
 export function isValidWorkingDaysString(value: string) {
@@ -220,6 +168,3 @@ export function isValidWorkingDaysString(value: string) {
 	return allDaysValid(value.split(','));
 }
 
-function allDaysValid(days: string[]) {
-	return days.every(function (d) { return DAYS_TO_NUMBER.get(d.toLowerCase().trim()) != undefined; });
-}
