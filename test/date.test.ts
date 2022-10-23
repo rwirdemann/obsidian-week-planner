@@ -1,4 +1,4 @@
-import {DATE_FORMAT, dateString, isWorkingDay} from "../src/date";
+import {DATE_FORMAT, dateString, getCalendarWeek, isWorkingDay} from "../src/date";
 import * as Moment from "moment";
 
 jest.mock('obsidian', () => ({
@@ -17,4 +17,14 @@ test('dateString', () => {
 
 	const mon = sun.add(1, "day")
 	expect(dateString(mon)).toBe("2022-10-24");
+});
+
+test('getCalendatWeek', () => {
+	const sun = Moment("2022-10-23", DATE_FORMAT)
+	const w42 = getCalendarWeek(sun.toDate())
+	expect(w42).toBe(42);
+
+	const mon = Moment("2022-10-24", DATE_FORMAT)
+	const w43 = getCalendarWeek(mon.toDate())
+	expect(w43).toBe(43);
 });
