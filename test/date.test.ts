@@ -21,10 +21,10 @@ test('dateString', () => {
 
 test('getCalendatWeek', () => {
 	const sun = Moment("2022-10-23", DATE_FORMAT)
-	const w42 = getCalendarWeek(sun.toDate())
+	const w42 = getCalendarWeek(sun)
 	expect(w42).toBe(42);
 
 	const mon = Moment("2022-10-24", DATE_FORMAT)
-	const w43 = getCalendarWeek(mon.toDate())
+	const w43 = getCalendarWeek(mon)
 	expect(w43).toBe(43);
 });

@@ -26,10 +26,8 @@ export function getWeekday(date: Date) {
 	return weekday[date.getDay()];
 }
 
-export function getCalendarWeek(date: Date) {
-	const startDate = new Date(date.getFullYear(), 0, 1);
-	const days = Math.floor((date.valueOf() - startDate.valueOf()) / (24 * 60 * 60 * 1000));
-	return Math.ceil(days / 7);
+export function getCalendarWeek(m: moment.Moment) {
+	return m.isoWeek()
 }
 
 export function allDaysValid(days: string[]) {

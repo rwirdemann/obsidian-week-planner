@@ -1,4 +1,4 @@
-import {App, Editor, MarkdownView, Plugin, PluginSettingTab, Setting} from 'obsidian';
+import {App, Editor, MarkdownView, Plugin, PluginSettingTab, Setting, moment} from 'obsidian';
 import WeekPlannerFile, {
 	extendFileName,
 	getInboxFileName,
@@ -87,9 +87,9 @@ export default class WeekPlannerPlugin extends Plugin {
 	}
 
 	async createWeek() {
-		const date = new Date()
-		let weekFile = new WeekPlannerFile(this.app.vault, getWeekFileName(date));
-		await weekFile.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, 'Goals of Week ' + getCalendarWeek(date))
+		const m = moment()
+		let weekFile = new WeekPlannerFile(this.app.vault, getWeekFileName(m));
+		await weekFile.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, 'Goals of Week ' + getCalendarWeek(m))
 	}
 
 	async createToday() {
