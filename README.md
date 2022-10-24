@@ -1,5 +1,7 @@
 # Obsidian Week Planner Plugin
 
+https://user-images.githubusercontent.com/28768/197604992-021aadc1-1bb0-4622-a4c8-dc424d05d9cb.mov
+
 This plugin reflects my personal working process that is organized around three central ideas:
 
 - Inbox: single, unordered lists of todos
