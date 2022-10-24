@@ -68,7 +68,7 @@ export default class WeekPlannerFile {
 
 	async createIfNotExistsAndOpen(vault: Vault, workspace: Workspace, header: string) {
 		await this.createIfNotExists(vault, workspace, header)
-		await workspace.openLinkText(this.obsidianFile(this.fullFileName), '', true)
+		await workspace.openLinkText(this.obsidianFile(this.fullFileName), '', false)
 	}
 
 	obsidianFile(filename: string) {
