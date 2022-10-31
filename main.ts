@@ -1,4 +1,4 @@
-import {App, Editor, MarkdownView, Plugin, PluginSettingTab, Setting, moment} from 'obsidian';
+import {App, Editor, Plugin, PluginSettingTab, Setting, moment} from 'obsidian';
 import WeekPlannerFile, {
 	extendFileName,
 	getInboxFileName,
@@ -80,7 +80,7 @@ export default class WeekPlannerPlugin extends Plugin {
 		this.addCommand({
 			id: 'move-task',
 			name: 'Move Task',
-			editorCallback: (editor: Editor, view: MarkdownView) => {
+			editorCallback: (editor: Editor) => {
 				this.moveTask(editor)
 			}
 		});
@@ -88,7 +88,7 @@ export default class WeekPlannerPlugin extends Plugin {
 		this.addCommand({
 			id: 'move-to-inbox',
 			name: 'Move to Inbox',
-			editorCallback: (editor: Editor, view: MarkdownView) => {
+			editorCallback: (editor: Editor) => {
 				this.moveTaskToInbox(editor)
 			}
 		});
