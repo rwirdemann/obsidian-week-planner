@@ -54,6 +54,7 @@
 				   name="target-date"
 				   bind:value={todo.targetDate}
 			>
+			<small style="margin-left: 8px">Only considered for target list 'Specific date'</small>
 		</div>
 	</div>
 	<hr/>
