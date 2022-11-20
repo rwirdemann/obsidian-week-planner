@@ -32,7 +32,7 @@ export default class WeekPlannerPlugin extends Plugin {
 			id: "add-todo",
 			name: "Add Todo",
 			callback: () => {
-				new TodoModal(this.app, '', (task: string, list: string, date: Date) => {
+				new TodoModal(this.app, 'Create Task', '', (task: string, list: string, date: Date) => {
 					if (list == 'inbox') {
 						this.insertIntoInbox(TODO_PREFIX + task)
 					} else if (list == 'target-date') {
@@ -93,6 +93,13 @@ export default class WeekPlannerPlugin extends Plugin {
 			}
 		});
 
+		this.addCommand({
+			id: 'move-anywhere',
+			name: 'Move anywhere',
+			editorCallback: (editor: Editor) => {
+				this.moveAnywhere(editor)
+			}
+		})
 		this.addSettingTab(new WeekPlannerSettingTab(this.app, this));
 	}
 
@@ -183,6 +190,18 @@ export default class WeekPlannerPlugin extends Plugin {
 		await this.move(editor, source, dest, 'Inbox')
 	}
 
+	async moveAnywhere(editor: Editor) {
+		const line = editor.getCursor().line
+		let todo = editor.getLine(line)
+		new TodoModal(this.app, 'Move Task', todo, (task: string, list: string, date: Date) => {
+			if (list == 'inbox') {
+				this.insertIntoInbox(TODO_PREFIX + task)
+			} else if (list == 'target-date') {
+				this.insertIntoTargetDate(date, TODO_PREFIX + task)
+			}
+		}).open();
+	}
+
 	onunload() {
 	}
 
@@ -193,6 +212,7 @@ export default class WeekPlannerPlugin extends Plugin {
 	async saveSettings() {
 		await this.saveData(this.settings);
 	}
+
 }
 
 class WeekPlannerSettingTab extends PluginSettingTab {
