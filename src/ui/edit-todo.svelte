@@ -46,6 +46,7 @@
 			<label for="target-list" style="display:inline-block; width: 100px;">Target List</label>
 			<select id="target-list" bind:value={todo.list}>
 				<option value="inbox">Inbox</option>
+				<option value="tomorrow">Tomorrow</option>
 				<option value="target-date">Specific date</option>
 			</select>
 		</div>

@@ -43,7 +43,8 @@ them as seamless as possible. These goals are achieved by providing a set of com
 - `Show Yesterday` Creates and / or shows the todo list of *yesterday*
 - `Move Task` Moves task under cursor to the next working day
 - `Move to Inbox` Moves task under cursor back to the inbox
-- `Add Todo` Opens a todo modal to create a new todo and insert it into the inbox or a specific data document
+- `Move anywhere` Opens a modal to move task under cursor to the inbox or a specific date document
+- `Add Todo` Opens a todo modal to create a new todo and insert it into the inbox or a specific date document
 
 All `Show`-Tasks open the relevant document. The document and the underlying folder structure is
 created automatically if it doesn't exist.
