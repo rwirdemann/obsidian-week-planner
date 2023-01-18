@@ -8,7 +8,7 @@ import WeekPlannerFile, {
 	getTomorrowDate,
 	getYesterdayDate,
 	getNextWorkingDay,
-	isValidWorkingDaysString
+	isValidWorkingDaysString, getDateFromFilename
 } from "./src/file";
 import {TODO_DONE_PREFIX, TODO_PREFIX} from "./src/constants";
 import {getCalendarWeek} from "./src/date";
@@ -158,23 +158,20 @@ export default class WeekPlannerPlugin extends Plugin {
 		let source = new WeekPlannerFile(this.app.vault, sourceFileName);
 
 		let destFileName = ""
-		let header = ""
+
 		if (source.isInbox() || source.isYesterday()) {
-			const date = getNextWorkingDay()
-			destFileName = getDayFileName(date)
-			header = getDayFileHeader(date)
-		} else if (source.isToday()) {
-			const date = getTomorrowDate(this.settings.workingDays)
-			destFileName = getDayFileName(getTomorrowDate(this.settings.workingDays))
-			header = getDayFileHeader(date)
+			// Inbox and yesterday's todos are move to today
+			destFileName = getDayFileName(getNextWorkingDay())
 		} else {
-			const date = getNextWorkingDay()
-			destFileName = getDayFileName(date)
-			header = getDayFileHeader(date)
+			// All other todos are move to the next working day following the day represented by the current file
+			let dateFromFilename = getDateFromFilename(source.fullFileName);
+			destFileName = getDayFileName(getTomorrowDate(this.settings.workingDays, dateFromFilename))
 		}
 
+		// Consider to move files from the past also to today
+
 		let dest = new WeekPlannerFile(this.app.vault, destFileName);
-		await this.move(editor, source, dest, header)
+		await this.move(editor, source, dest, 'Inbox')
 	}
 
 	async move(editor: Editor, source: WeekPlannerFile, dest: WeekPlannerFile, header: string) {
