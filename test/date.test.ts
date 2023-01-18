@@ -19,7 +19,7 @@ test('dateString', () => {
 	expect(dateString(mon)).toBe("2022-10-24");
 });
 
-test('getCalendatWeek', () => {
+test('getCalendarWeek', () => {
 	const sun = Moment("2022-10-23", DATE_FORMAT)
 	const w42 = getCalendarWeek(sun)
 	expect(w42).toBe(42);

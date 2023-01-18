@@ -168,7 +168,9 @@ export default class WeekPlannerPlugin extends Plugin {
 			destFileName = getDayFileName(getTomorrowDate(this.settings.workingDays))
 			header = getDayFileHeader(date)
 		} else {
-			return
+			const date = getNextWorkingDay()
+			destFileName = getDayFileName(date)
+			header = getDayFileHeader(date)
 		}
 
 		let dest = new WeekPlannerFile(this.app.vault, destFileName);

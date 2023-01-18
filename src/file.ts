@@ -1,7 +1,8 @@
 import {EditorPosition, Vault, Editor, Workspace, normalizePath, moment} from 'obsidian';
 import { WEEK_PLANNER_BASE_DIR, WEEK_PLANNER_DAYS_DIR, WEEK_WEEK_DIR } from "./constants";
 import * as path from 'path';
-import {allDaysValid, getWeekday, isWorkingDay, getCalendarWeek, dateString} from "./date";
+import {allDaysValid, getWeekday, isWorkingDay, getCalendarWeek, dateString, DATE_FORMAT} from "./date";
+import * as Moment from "moment/moment";
 
 export default class WeekPlannerFile {
 	vault: Vault
@@ -123,6 +124,19 @@ export function getInboxFileName() {
 
 export function getDayFileName(date: Date) {
 	return WEEK_PLANNER_BASE_DIR + '/' + WEEK_PLANNER_DAYS_DIR + '/' + dateString(moment(date)) + "-" + getWeekday(date) + '.md'
+}
+
+export function getDateFromFilename(filename: String) {
+	if (filename == undefined || filename == '') {
+		return Date()
+	}
+	const parts = filename.split('/')
+	if (parts.length == 0) {
+		return Date()
+	}
+	const dateString = parts[parts.length-1]
+	const withoutWeekday = dateString.substring(0, dateString.lastIndexOf('-'))
+	return Moment(withoutWeekday, DATE_FORMAT)
 }
 
 export function getDayFileHeader(date: Date) {
