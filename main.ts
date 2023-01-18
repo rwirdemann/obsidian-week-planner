@@ -32,7 +32,7 @@ export default class WeekPlannerPlugin extends Plugin {
 			id: "add-todo",
 			name: "Add Todo",
 			callback: () => {
-				new TodoModal(this.app, 'Create Task', '', (task: string, list: string, date: Date) => {
+				new TodoModal(this.app, 'Create Task', 'Create', '', (task: string, list: string, date: Date) => {
 					if (list == 'inbox') {
 						this.insertIntoInbox(TODO_PREFIX + task)
 					} else if (list == 'tomorrow') {
@@ -106,13 +106,6 @@ export default class WeekPlannerPlugin extends Plugin {
 	}
 
 	async insertIntoTargetDate(date: Date, todo: string) {
-		let today = new WeekPlannerFile(this.app.vault, getDayFileName(date));
-		await today.createIfNotExists(this.app.vault, this.app.workspace, 'Inbox')
-		await today.insertAt(todo, 1)
-	}
-
-	async insertIntoToday(todo: string) {
-		let date = new Date()
 		let today = new WeekPlannerFile(this.app.vault, getDayFileName(date));
 		await today.createIfNotExists(this.app.vault, this.app.workspace, 'Inbox')
 		await today.insertAt(todo, 1)
@@ -204,7 +197,7 @@ export default class WeekPlannerPlugin extends Plugin {
 		let todo = editor.getLine(line)
 		if (todo.startsWith(TODO_PREFIX) || todo.startsWith(TODO_DONE_PREFIX)) {
 			todo = todo.substring(TODO_PREFIX.length, todo.length)
-			new TodoModal(this.app, 'Move Task', todo, (task: string, list: string, date: Date) => {
+			new TodoModal(this.app, 'Move Task', 'Move', todo, (task: string, list: string, date: Date) => {
 				const sourceFileName = extendFileName(this.app.workspace.getActiveFile()?.name)
 				const source = new WeekPlannerFile(this.app.vault, sourceFileName);
 
