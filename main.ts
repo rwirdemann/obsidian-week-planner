@@ -9,19 +9,10 @@ import WeekPlannerFile, {
 	getNextWorkingDay,
 	isValidWorkingDaysString, getDateFromFilename
 } from "./src/file";
-import {TODO_DONE_PREFIX, TODO_PREFIX, WEEK_PLANNER_BASE_DIR} from "./src/constants";
+import {TODO_DONE_PREFIX, TODO_PREFIX} from "./src/constants";
 import {getCalendarWeek} from "./src/date";
 import {TodoModal} from "./src/todo-modal";
-
-interface WeekPlannerPluginSettings {
-	workingDays: string;
-	baseDir: string
-}
-
-const DEFAULT_SETTINGS: WeekPlannerPluginSettings = {
-	workingDays: 'Mon,Tue,Wed,Thu,Fri',
-	baseDir: WEEK_PLANNER_BASE_DIR
-}
+import {DEFAULT_SETTINGS, WeekPlannerPluginSettings} from "./src/settings";
 
 // noinspection JSUnusedGlobalSymbols
 export default class WeekPlannerPlugin extends Plugin {
