@@ -2,12 +2,15 @@ import {EditorPosition, Vault, Editor, Workspace, normalizePath, moment} from 'o
 import {WEEK_PLANNER_BASE_DIR, WEEK_PLANNER_DAYS_DIR, WEEK_WEEK_DIR} from "./constants";
 import * as path from 'path';
 import {allDaysValid, getWeekday, isWorkingDay, getCalendarWeek, dateString, DATE_FORMAT} from "./date";
+import {WeekPlannerPluginSettings} from "./settings";
 
 export default class WeekPlannerFile {
 	vault: Vault
 	fullFileName: string
+	settings: WeekPlannerPluginSettings
 
-	constructor(vault: Vault, fullFileName: string) {
+	constructor(settings: WeekPlannerPluginSettings, vault: Vault, fullFileName: string) {
+		this.settings = settings;
 		this.vault = vault;
 		this.fullFileName = fullFileName
 	}
@@ -67,7 +70,7 @@ export default class WeekPlannerFile {
 	}
 
 	isInbox() {
-		return this.fullFileName == getInboxFileName();
+		return this.fullFileName == getInboxFileName(this.settings);
 	}
 
 	isYesterday() {
@@ -95,7 +98,7 @@ export default class WeekPlannerFile {
 	}
 }
 
-export function extendFileName(filename?: string) {
+export function extendFileName(settings: WeekPlannerPluginSettings, filename?: string) {
 	if (filename == 'Inbox.md') {
 		return WEEK_PLANNER_BASE_DIR + '/' + 'Inbox.md'
 	} else {
@@ -103,11 +106,11 @@ export function extendFileName(filename?: string) {
 	}
 }
 
-export function getInboxFileName() {
+export function getInboxFileName(settings: WeekPlannerPluginSettings) {
 	return WEEK_PLANNER_BASE_DIR + '/' + 'Inbox.md'
 }
 
-export function getDayFileName(date: Date) {
+export function getDayFileName(settings: WeekPlannerPluginSettings, date: Date) {
 	return WEEK_PLANNER_BASE_DIR + '/' + WEEK_PLANNER_DAYS_DIR + '/' + dateString(moment(date)) + "-" + getWeekday(date) + '.md'
 }
 
@@ -124,14 +127,14 @@ export function getDateFromFilename(filename: String): moment.Moment {
 	return moment(withoutWeekday, DATE_FORMAT).set({hour: 0, minute: 0, second: 0, millisecond: 0})
 }
 
-export function getWeekFileName(m: moment.Moment) {
+export function getWeekFileName(settings: WeekPlannerPluginSettings, m: moment.Moment) {
 	const year = m.year()
 	return WEEK_PLANNER_BASE_DIR + '/' + WEEK_WEEK_DIR + '/' + 'Calweek-' + year + '-' + getCalendarWeek(m) + '.md'
 }
 
-export function getNextWorkingDay() {
+export function getNextWorkingDay(workingDays: string) {
 	let today = new Date()
-	while (!isWorkingDay(today)) {
+	while (!isWorkingDay(today, workingDays)) {
 		today.setDate(today.getDate() + 1);
 	}
 	return today
