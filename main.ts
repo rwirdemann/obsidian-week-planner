@@ -2,7 +2,6 @@ import {App, Editor, Plugin, PluginSettingTab, Setting, moment} from 'obsidian';
 import WeekPlannerFile, {
 	extendFileName,
 	getInboxFileName,
-	getDayFileHeader,
 	getDayFileName,
 	getWeekFileName,
 	getTomorrowDate,
@@ -10,18 +9,21 @@ import WeekPlannerFile, {
 	getNextWorkingDay,
 	isValidWorkingDaysString, getDateFromFilename
 } from "./src/file";
-import {TODO_DONE_PREFIX, TODO_PREFIX} from "./src/constants";
+import {TODO_DONE_PREFIX, TODO_PREFIX, WEEK_PLANNER_BASE_DIR} from "./src/constants";
 import {getCalendarWeek} from "./src/date";
 import {TodoModal} from "./src/todo-modal";
 
 interface WeekPlannerPluginSettings {
 	workingDays: string;
+	baseDir: string
 }
 
 const DEFAULT_SETTINGS: WeekPlannerPluginSettings = {
-	workingDays: 'Mon,Tue,Wed,Thu,Fri'
+	workingDays: 'Mon,Tue,Wed,Thu,Fri',
+	baseDir: WEEK_PLANNER_BASE_DIR
 }
 
+// noinspection JSUnusedGlobalSymbols
 export default class WeekPlannerPlugin extends Plugin {
 	settings: WeekPlannerPluginSettings;
 
@@ -157,8 +159,7 @@ export default class WeekPlannerPlugin extends Plugin {
 		let sourceFileName = extendFileName(this.app.workspace.getActiveFile()?.name)
 		let source = new WeekPlannerFile(this.app.vault, sourceFileName);
 
-		let destFileName = ""
-
+		let destFileName: string
 		if (source.isInbox() || source.isYesterday()) {
 			// Inbox and yesterday's todos are move to today
 			destFileName = getDayFileName(getNextWorkingDay())
@@ -224,7 +225,6 @@ export default class WeekPlannerPlugin extends Plugin {
 	async saveSettings() {
 		await this.saveData(this.settings);
 	}
-
 }
 
 class WeekPlannerSettingTab extends PluginSettingTab {
@@ -251,6 +251,18 @@ class WeekPlannerSettingTab extends PluginSettingTab {
 				.onChange(async (value) => {
 					value = validateOrDefault(value)
 					this.plugin.settings.workingDays = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName('Base directory')
+			.setDesc('Base directory of week planner')
+			.addText(text => text
+				.setPlaceholder('Week Planner')
+				.setValue(this.plugin.settings.baseDir)
+				.onChange(async (value) => {
+					value = validateBaseDirOrDefault(value)
+					this.plugin.settings.baseDir = value;
 					await this.plugin.saveSettings();
 				}));
 
@@ -284,6 +296,14 @@ function validateOrDefault(value: string) {
 
 	console.log('working day string is invalid. using default')
 	return DEFAULT_SETTINGS.workingDays
+}
+
+function validateBaseDirOrDefault(value: string) {
+	if (value === undefined || value === '') {
+		console.log('basedir is invalid. using default')
+		return DEFAULT_SETTINGS.baseDir
+	}
+	return value
 }
 
 const createDonateButton = (link: string, img: HTMLElement): HTMLElement => {
