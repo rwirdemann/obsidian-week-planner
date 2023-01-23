@@ -247,7 +247,7 @@ class WeekPlannerSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Base directory')
-			.setDesc('Base directory of week planner')
+			.setDesc("Week planner's root directory. Will be created if if doesn't exists.")
 			.addText(text => text
 				.setPlaceholder('Week Planner')
 				.setValue(this.plugin.settings.baseDir)

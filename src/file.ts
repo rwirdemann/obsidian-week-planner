@@ -1,5 +1,5 @@
 import {EditorPosition, Vault, Editor, Workspace, normalizePath, moment} from 'obsidian';
-import {WEEK_PLANNER_BASE_DIR, WEEK_PLANNER_DAYS_DIR, WEEK_WEEK_DIR} from "./constants";
+import {WEEK_PLANNER_DAYS_DIR, WEEK_WEEK_DIR} from "./constants";
 import * as path from 'path';
 import {allDaysValid, getWeekday, isWorkingDay, getCalendarWeek, dateString, DATE_FORMAT} from "./date";
 import {WeekPlannerPluginSettings} from "./settings";
@@ -100,18 +100,18 @@ export default class WeekPlannerFile {
 
 export function extendFileName(settings: WeekPlannerPluginSettings, filename?: string) {
 	if (filename == 'Inbox.md') {
-		return WEEK_PLANNER_BASE_DIR + '/' + 'Inbox.md'
+		return settings.baseDir + '/' + 'Inbox.md'
 	} else {
-		return WEEK_PLANNER_BASE_DIR + '/' + WEEK_PLANNER_DAYS_DIR + '/' + filename
+		return settings.baseDir + '/' + WEEK_PLANNER_DAYS_DIR + '/' + filename
 	}
 }
 
 export function getInboxFileName(settings: WeekPlannerPluginSettings) {
-	return WEEK_PLANNER_BASE_DIR + '/' + 'Inbox.md'
+	return settings.baseDir + '/' + 'Inbox.md'
 }
 
 export function getDayFileName(settings: WeekPlannerPluginSettings, date: Date) {
-	return WEEK_PLANNER_BASE_DIR + '/' + WEEK_PLANNER_DAYS_DIR + '/' + dateString(moment(date)) + "-" + getWeekday(date) + '.md'
+	return settings.baseDir + '/' + WEEK_PLANNER_DAYS_DIR + '/' + dateString(moment(date)) + "-" + getWeekday(date) + '.md'
 }
 
 export function getDateFromFilename(filename: String): moment.Moment {
@@ -129,7 +129,7 @@ export function getDateFromFilename(filename: String): moment.Moment {
 
 export function getWeekFileName(settings: WeekPlannerPluginSettings, m: moment.Moment) {
 	const year = m.year()
-	return WEEK_PLANNER_BASE_DIR + '/' + WEEK_WEEK_DIR + '/' + 'Calweek-' + year + '-' + getCalendarWeek(m) + '.md'
+	return settings.baseDir + '/' + WEEK_WEEK_DIR + '/' + 'Calweek-' + year + '-' + getCalendarWeek(m) + '.md'
 }
 
 export function getNextWorkingDay(workingDays: string) {
