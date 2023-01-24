@@ -102,7 +102,7 @@ export function extendFileName(settings: WeekPlannerPluginSettings, filename?: s
 	if (filename == 'Inbox.md') {
 		return settings.baseDir + '/' + 'Inbox.md'
 	} else {
-		return settings.baseDir + '/' + WEEK_PLANNER_DAYS_DIR + '/' + filename
+		return settings.baseDir + '/' + settings.daysDir + '/' + filename
 	}
 }
 
@@ -111,7 +111,7 @@ export function getInboxFileName(settings: WeekPlannerPluginSettings) {
 }
 
 export function getDayFileName(settings: WeekPlannerPluginSettings, date: Date) {
-	return settings.baseDir + '/' + WEEK_PLANNER_DAYS_DIR + '/' + dateString(moment(date)) + "-" + getWeekday(date) + '.md'
+	return settings.baseDir + '/' + settings.daysDir + '/' + dateString(moment(date)) + "-" + getWeekday(date) + '.md'
 }
 
 export function getDateFromFilename(filename: String): moment.Moment {
