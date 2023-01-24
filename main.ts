@@ -269,6 +269,18 @@ class WeekPlannerSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				}));
 
+		new Setting(containerEl)
+			.setName('Weeks directory')
+			.setDesc("Subdirectory of base where weekly files are stored. Will be created if if doesn't exists.")
+			.addText(text => text
+				.setPlaceholder('Weeks')
+				.setValue(this.plugin.settings.weeksDir)
+				.onChange(async (value) => {
+					value = validateWeeksDirOrDefault(value)
+					this.plugin.settings.weeksDir = value;
+					await this.plugin.saveSettings();
+				}));
+
 		const div = containerEl.createEl('div', {
 			cls: 'advanced-tables-donation',
 		});
@@ -313,6 +325,14 @@ function validateDaysDirOrDefault(value: string) {
 	if (value === undefined || value === '') {
 		console.log('daysdir is invalid. using default')
 		return DEFAULT_SETTINGS.daysDir
+	}
+	return value
+}
+
+function validateWeeksDirOrDefault(value: string) {
+	if (value === undefined || value === '') {
+		console.log('weeksdir is invalid. using default')
+		return DEFAULT_SETTINGS.weeksDir
 	}
 	return value
 }
