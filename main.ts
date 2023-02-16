@@ -191,16 +191,21 @@ export default class WeekPlannerPlugin extends Plugin {
 			new TodoModal(this.app, 'Move Task', 'Move', todo, (task: string, list: string, date: Date) => {
 				const sourceFileName = extendFileName(this.settings, this.app.workspace.getActiveFile()?.name)
 				const source = new WeekPlannerFile(this.settings, this.app.vault, sourceFileName);
-
 				if (list == 'inbox') {
-					this.moveTaskToInbox(editor)
+					if (sourceFileName != getInboxFileName(this.settings)) {
+						this.moveTaskToInbox(editor)
+					}
 				} else if (list == 'tomorrow') {
 					const tomorrow = getTomorrowDate(this.settings.workingDays)
-					const dest = new WeekPlannerFile(this.settings, this.app.vault, getDayFileName(this.settings, tomorrow));
-					this.move(editor, source, dest, 'Inbox')
+					if (sourceFileName != getDayFileName(this.settings, tomorrow)) {
+						const dest = new WeekPlannerFile(this.settings, this.app.vault, getDayFileName(this.settings, tomorrow));
+						this.move(editor, source, dest, 'Inbox')
+					}
 				} else if (list == 'target-date') {
-					const dest = new WeekPlannerFile(this.settings, this.app.vault, getDayFileName(this.settings, date));
-					this.move(editor, source, dest, 'Inbox')
+					if (sourceFileName != getDayFileName(this.settings, date)) {
+						const dest = new WeekPlannerFile(this.settings, this.app.vault, getDayFileName(this.settings, date));
+						this.move(editor, source, dest, 'Inbox')
+					}
 				}
 			}).open();
 		}

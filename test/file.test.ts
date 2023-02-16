@@ -1,7 +1,6 @@
 import {DATE_FORMAT} from "../src/date";
 import * as Moment from "moment";
 import {getWeekFileName} from "../src/file";
-import {WeekPlannerPluginSettings} from "../src/settings";
 import {WEEK_PLANNER_BASE_DIR, WEEK_PLANNER_DAYS_DIR, WEEK_WEEK_DIR} from "../src/constants";
 
 jest.mock('obsidian', () => ({

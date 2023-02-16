@@ -35,7 +35,7 @@ export function allDaysValid(days: string[]) {
 }
 
 export function dateString(m: moment.Moment) {
-	return m.format('YYYY-MM-DD');
+	return m.format('YYYY-MM-DD-dddd');
 }
 
 function mapToNumbersArray(workingDays: string) {

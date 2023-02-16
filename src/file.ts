@@ -110,7 +110,8 @@ export function getInboxFileName(settings: WeekPlannerPluginSettings) {
 }
 
 export function getDayFileName(settings: WeekPlannerPluginSettings, date: Date) {
-	return settings.baseDir + '/' + settings.daysDir + '/' + dateString(moment(date)) + "-" + getWeekday(date) + '.md'
+	let m = moment(date, true);
+	return settings.baseDir + '/' + settings.daysDir + '/' + dateString(m) + '.md'
 }
 
 export function getDateFromFilename(filename: String): moment.Moment {
