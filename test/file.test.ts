@@ -13,5 +13,4 @@ test('getWeekFileName', () => {
 
 	const mon = Moment("2022-10-24", DATE_FORMAT)
 	expect(getWeekFileName(mon)).toBe('Week Planner/Weeks/Calweek-2022-43.md');
-
 });
