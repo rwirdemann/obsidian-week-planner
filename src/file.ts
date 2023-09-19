@@ -11,7 +11,7 @@ export default class WeekPlannerFile {
 		this.fullFileName = fullFileName
 	}
 	async deleteLine(line: number, s: string, editor: Editor) {
-		let from: EditorPosition = { line: line, ch: 0 };		
+		const from: EditorPosition = { line: line, ch: 0 };
 		
 		// replace trailing newline only if the line to delete isn't the last one
 		let delta = 0
@@ -19,24 +19,24 @@ export default class WeekPlannerFile {
 			delta = path.sep.length
 		}
 
-		let to: EditorPosition = { line: line, ch: s.length + delta};
+		const to: EditorPosition = { line: line, ch: s.length + delta};
 		editor.replaceRange('', from, to)
 	}
 
 	async insertAt(line: string, at: number) {
-		let filecontents = await this.getFileContents()
+		const filecontents = await this.getFileContents()
 		if (filecontents == undefined) {
 			console.log('could not read file');
 			return
 		}
 
-		let todos = filecontents.split('\n')
+		const todos = filecontents.split('\n')
 		todos.splice(at, 0, line)
 		await this.updateFile(todos.join('\n'));
 	}
 
 	async getTodos() {
-		let filecontent = await this.getFileContents()
+		const filecontent = await this.getFileContents()
 		if (filecontent == undefined) {
 			console.log('could not read file');
 			return []
@@ -57,7 +57,7 @@ export default class WeekPlannerFile {
 		}
 	}
 
-	async createIfNotExists(vault: Vault, workspace: Workspace, header: String) {
+	async createIfNotExists(vault: Vault, workspace: Workspace, header: string) {
 		const fileExists = await vault.adapter.exists(this.fullFileName);
 		if (!fileExists) {
 			await this.ensureDirectories()
@@ -65,7 +65,7 @@ export default class WeekPlannerFile {
 		}
 	}
 
-	async createIfNotExistsAndOpen(vault: Vault, workspace: Workspace, header: String) {
+	async createIfNotExistsAndOpen(vault: Vault, workspace: Workspace, header: string) {
 		await this.createIfNotExists(vault, workspace, header)
 		await workspace.openLinkText(this.obsidianFile(this.fullFileName), '', true)
 	}
@@ -157,7 +157,7 @@ export function getWeekday(date: Date) {
 }
 
 export function getCurrentWorkdayDate() {
-	let date = new Date()
+	const date = new Date()
 	while (!isWorkDay(date)) {
 		date.setDate(date.getDate() + 1);
 	}
@@ -173,7 +173,7 @@ export function getTomorrowDate(workingDays: string) {
 }
 
 export function getYesterdayDate() {
-	let date = new Date()
+	const date = new Date()
 	date.setDate(date.getDate() - 1);
 	while (!isWorkDay(date)) {
 		date.setDate(date.getDate() - 1);
@@ -181,12 +181,12 @@ export function getYesterdayDate() {
 	return date
 }
 
-function isWorkDay(date: Date, workingDays?: string) {
+export function isWorkDay(date: Date, workingDays?: string) {
 	if (workingDays === undefined) {
 		return date.getDay() > 0 && date.getDay() < 6
 	}
 
-	let allowedDays = mapToNumbersArray(workingDays)
+	const allowedDays = mapToNumbersArray(workingDays)
 	return allowedDays.contains(date.getDay())
 }
 
