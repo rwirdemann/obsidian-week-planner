@@ -3,8 +3,8 @@ import WeekPlannerFile, {
 	dateString,
 	extendFileName,
 	getInboxFileName,
-	getTodayFileHeader,
-	getTodayFileName,
+	getDayFileHeader,
+	getDayFileName,
 	getWeekday,
 	getWeekFileName,
 	weekNumber
@@ -89,8 +89,8 @@ export default class WeekPlannerPlugin extends Plugin {
 
 	async createToday() {
 		let date = new Date()
-		let todayFile = new WeekPlannerFile(this.app.vault, getTodayFileName(date));
-		await todayFile.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, getTodayFileHeader(date))
+		let file = new WeekPlannerFile(this.app.vault, getDayFileName(date));
+		await file.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, getDayFileHeader(date))
 	}
 
 	async createTomorrow() {
@@ -100,8 +100,8 @@ export default class WeekPlannerPlugin extends Plugin {
 			date.setDate(date.getDate() + 1);
 		}
 
-		let tomorrow = dateString(date) + "-" + getWeekday(date)
-		await this.createNewNote(tomorrow, tomorrow, 'Days')
+		let file = new WeekPlannerFile(this.app.vault, getDayFileName(date));
+		await file.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, getDayFileHeader(date))
 	}
 
 	async createYesterday() {

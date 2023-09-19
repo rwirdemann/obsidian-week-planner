@@ -100,11 +100,11 @@ export function getInboxFileName() {
 	return WEEK_PLANNER_BASE_DIR + '/' + 'Inbox.md'
 }
 
-export function getTodayFileName(date: Date) {
+export function getDayFileName(date: Date) {
 	return WEEK_PLANNER_BASE_DIR + '/' + WEEK_PLANNER_DAYS_DIR + '/' + dateString(date) + "-" + getWeekday(date) + '.md'
 }
 
-export function getTodayFileHeader(date: Date) {
+export function getDayFileHeader(date: Date) {
 	return dateString(date) + "-" + getWeekday(date)
 }
 
