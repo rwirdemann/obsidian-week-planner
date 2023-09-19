@@ -8,7 +8,7 @@ This plugin reflects my personal working process that is organized around three 
 - Week: goals for the current week
 - Today: ordered lists of today's todos
 
-Each if these three todo containers is represented by a single Obsidean document type organized
+Each if these three todo containers is represented by a single Obsidian document type organized
 within the following folder structure:
 
 ```
@@ -41,7 +41,8 @@ them as seamless as possible. These goals are achieved by providing a set of com
 - `Show Today` Creates and / or shows the todo list for *today*
 - `Show Tomorrow` Creates and / or shows the todo list for *tomorrow*
 - `Show Yesterday` Creates and / or shows the todo list of *yesterday*
-- `Move Task` Moves tasks under cursor to the next working day
+- `Move Task` Moves task under cursor to the next working day
+- `Move to Inbox` Moves task under cursor back to the inbox
 - `Add Todo` Opens a todo modal to create a new todo and insert it into the inbox or a specific data document
 
 All `Show`-Tasks open the relevant document. The document and the underlying folder structure is
@@ -72,7 +73,7 @@ next day on the day before.
 
 ## Settings
 
-The plugin allows you to define the set of your specific working days accoring to the following
+The plugin allows you to define the set of your specific working days according to the following
 format:
 
 ```
