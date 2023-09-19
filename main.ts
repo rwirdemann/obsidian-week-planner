@@ -1,4 +1,4 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import {App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting} from 'obsidian';
 
 interface WeekPlannerPluginSettings {
 	mySetting: string;
@@ -22,30 +22,26 @@ export default class WeekPlannerPlugin extends Plugin {
 		// Perform additional things with the ribbon
 		ribbonIconEl.addClass('my-plugin-ribbon-class');
 
-		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
-		const statusBarItemEl = this.addStatusBarItem();
-		statusBarItemEl.setText('Status Bar Text');
+		this.addCommand({
+			id: 'week-planner-inbox',
+			name: 'Show Inbox',
+			callback: () => this.createNewNote('Inbox', 'Inbox'),
+			hotkeys: []
+		});
 
 		this.addCommand({
-      id: 'week-planner-inbox',
-      name: 'Show Inbox',
-      callback: () => this.createNewNote('Inbox', 'Inbox'),
-      hotkeys: []
-    });
+			id: 'week-planner-week',
+			name: 'Show Week',
+			callback: () => this.createNewNote('Calweek-2022-36', 'Goals of Calendar Week 36', 'Weeks'),
+			hotkeys: []
+		});
 
 		this.addCommand({
-      id: 'week-planner-week',
-      name: 'Show Week',
-      callback: () => this.createNewNote('Calweek-2022-36', 'Goals of Calendar Week 36', 'Weeks'),
-      hotkeys: []
-    });
-
-		this.addCommand({
-      id: 'week-planner-today',
-      name: 'Show Today',
-      callback: () => this.createNewNote('2022-09-05-Monday', 'Today', 'Days'),
-      hotkeys: []
-    });
+			id: 'week-planner-today',
+			name: 'Show Today',
+			callback: () => this.createNewNote('2022-09-05-Monday', 'Today', 'Days'),
+			hotkeys: []
+		});
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new SampleSettingTab(this.app, this));
@@ -60,7 +56,7 @@ export default class WeekPlannerPlugin extends Plugin {
 		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
 	}
 
-	async createNewNote(input: string, header: string, subdir?: string): Promise<void> {		
+	async createNewNote(input: string, header: string, subdir?: string): Promise<void> {
 		if (typeof subdir !== 'undefined') {
 			const subDirectoryExists = await this.app.vault.adapter.exists('Week Planner/' + subdir);
 			if (!subDirectoryExists) {
@@ -69,7 +65,7 @@ export default class WeekPlannerPlugin extends Plugin {
 		}
 
 		const directoryPath = 'Week Planner'
-    const directoryExists = await this.app.vault.adapter.exists(directoryPath);
+		const directoryExists = await this.app.vault.adapter.exists(directoryPath);
 		if (!directoryExists) {
 			await this.app.vault.createFolder(directoryPath)
 		}
@@ -85,7 +81,7 @@ export default class WeekPlannerPlugin extends Plugin {
 		if (!fileExists) {
 			await this.app.vault.create(fullFileName + '.md', '## ' + header)
 		}
-		this.app.workspace.openLinkText(fullFileName, '', false )
+		this.app.workspace.openLinkText(fullFileName, '', false)
 	}
 
 	onunload() {
