@@ -28,7 +28,7 @@ export default class WeekPlannerPlugin extends Plugin {
 		this.addCommand({
 			id: 'week-planner-inbox',
 			name: 'Show Inbox',
-			callback: () => this.createNewNote('Inbox', 'Inbox'),
+			callback: () => this.createInbox(),
 			hotkeys: []
 		});
 
@@ -81,6 +81,12 @@ export default class WeekPlannerPlugin extends Plugin {
 		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
 	}
 
+	async createInbox() {
+		const date = new Date()
+		let weekFile = new WeekPlannerFile(this.app.vault, getInboxFileName());
+		await weekFile.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, 'Inbox')
+	}
+
 	async createWeek() {
 		const date = new Date()
 		let weekFile = new WeekPlannerFile(this.app.vault, getWeekFileName(date));
@@ -112,13 +118,13 @@ export default class WeekPlannerPlugin extends Plugin {
 			date.setDate(date.getDate() - 1);
 		}
 
-		let yesterday = dateString(date) + "-" + getWeekday(date)
-		await this.createNewNote(yesterday, 'Today', 'Days')
+		let file = new WeekPlannerFile(this.app.vault, getDayFileName(date));
+		await file.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, getDayFileHeader(date))
 	}
 
 	async moveToToday(editor: Editor) {
 		let sourceFileName = extendFileName(this.app.workspace.getActiveFile()?.name)
-		let todayFileName = getTodayFileName(new Date())
+		let todayFileName = getDayFileName(new Date())
 		if (sourceFileName == todayFileName) {
 			return 
 		}
@@ -133,50 +139,6 @@ export default class WeekPlannerPlugin extends Plugin {
 			console.log('line: ' + todo)
 			await today.insertAt(todo, 1)
 			await source.deleteLineAt(line)
-		}
-	}
-
-	async createNewNote(input: string, header: string, subdir?: string): Promise<void> {
-		if (typeof subdir !== 'undefined') {
-			const subDirectoryExists = await this.app.vault.adapter.exists('Week Planner/' + subdir);
-			if (!subDirectoryExists) {
-				await this.app.vault.createFolder('Week Planner/' + subdir)
-			}
-		}
-
-		const directoryPath = 'Week Planner'
-		const directoryExists = await this.app.vault.adapter.exists(directoryPath);
-		if (!directoryExists) {
-			await this.app.vault.createFolder(directoryPath)
-		}
-
-		let fullFileName = "";
-		if (typeof subdir !== 'undefined') {
-			fullFileName = 'Week Planner/' + subdir + '/' + input
-		} else {
-			fullFileName = 'Week Planner/' + input
-		}
-
-		const fileExists = await this.app.vault.adapter.exists(fullFileName + '.md');
-		if (!fileExists) {
-			await this.app.vault.create(fullFileName + '.md', '## ' + header)
-		}
-		await this.app.workspace.openLinkText(fullFileName, '', false)
-	}
-
-	async getFileContents(fileName: string) {
-		try {
-			return await this.app.vault.adapter.read(fileName);
-		} catch (error) {
-			console.log(error)
-		}
-	}
-
-	async updateFile(fileName: string, fileContents: string) {
-		try {
-			return await this.app.vault.adapter.write(fileName, fileContents);
-		} catch (error) {
-			console.log(error)
 		}
 	}
 
