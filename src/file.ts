@@ -81,7 +81,7 @@ export default class WeekPlannerFile {
 	}
 
 	isInbox() {
-		return this.fullFileName.endsWith('Inbox.md')
+		return this.fullFileName == getInboxFileName();
 	}
 
 	isToday() {
