@@ -1,4 +1,4 @@
-import {App, Editor, MarkdownView, Plugin, PluginSettingTab, Setting, moment, Notice} from 'obsidian';
+import {App, Editor, MarkdownView, Plugin, PluginSettingTab, Setting, moment} from 'obsidian';
 import WeekPlannerFile, {
 	extendFileName,
 	getInboxFileName,
@@ -12,7 +12,7 @@ import WeekPlannerFile, {
 } from "./src/file";
 import {TODO_DONE_PREFIX, TODO_PREFIX} from "./src/constants";
 import {getCalendarWeek} from "./src/date";
-import {TodoModal} from "./src/modal";
+import {TodoModal} from "./src/todo-modal";
 
 interface WeekPlannerPluginSettings {
 	workingDays: string;
@@ -32,11 +32,11 @@ export default class WeekPlannerPlugin extends Plugin {
 			id: "add-todo",
 			name: "Add Todo",
 			callback: () => {
-				new TodoModal(this.app, (result, targetList, targetDate) => {
-					if (targetList == 'inbox') {
-						this.insertIntoInbox(TODO_PREFIX + result)
-					} else if (targetList == 'target-date') {
-						this.insertIntoTargetDate(targetDate, TODO_PREFIX + result)
+				new TodoModal(this.app, '', (task: string, list: string, date: Date) => {
+					if (list == 'inbox') {
+						this.insertIntoInbox(TODO_PREFIX + task)
+					} else if (list == 'target-date') {
+						this.insertIntoTargetDate(date, TODO_PREFIX + task)
 					}
 				}).open();
 			},
@@ -107,7 +107,7 @@ export default class WeekPlannerPlugin extends Plugin {
 		let today = new WeekPlannerFile(this.app.vault, getDayFileName(date));
 		await today.createIfNotExists(this.app.vault, this.app.workspace, getDayFileHeader(date))
 		await today.insertAt(todo, 1)
-    }
+	}
 
 	async insertIntoInbox(todo: string) {
 		let inbox = new WeekPlannerFile(this.app.vault, getInboxFileName());
