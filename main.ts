@@ -257,6 +257,18 @@ class WeekPlannerSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				}));
 
+		new Setting(containerEl)
+			.setName('Days directory')
+			.setDesc("Subdirectory of base where daily todo files are stored. Will be created if if doesn't exists.")
+			.addText(text => text
+				.setPlaceholder('Days')
+				.setValue(this.plugin.settings.daysDir)
+				.onChange(async (value) => {
+					value = validateDaysDirOrDefault(value)
+					this.plugin.settings.daysDir = value;
+					await this.plugin.saveSettings();
+				}));
+
 		const div = containerEl.createEl('div', {
 			cls: 'advanced-tables-donation',
 		});
@@ -293,6 +305,14 @@ function validateBaseDirOrDefault(value: string) {
 	if (value === undefined || value === '') {
 		console.log('basedir is invalid. using default')
 		return DEFAULT_SETTINGS.baseDir
+	}
+	return value
+}
+
+function validateDaysDirOrDefault(value: string) {
+	if (value === undefined || value === '') {
+		console.log('daysdir is invalid. using default')
+		return DEFAULT_SETTINGS.daysDir
 	}
 	return value
 }
