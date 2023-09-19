@@ -2,7 +2,6 @@ import {EditorPosition, Vault, Editor, Workspace, normalizePath, moment} from 'o
 import {WEEK_PLANNER_BASE_DIR, WEEK_PLANNER_DAYS_DIR, WEEK_WEEK_DIR} from "./constants";
 import * as path from 'path';
 import {allDaysValid, getWeekday, isWorkingDay, getCalendarWeek, dateString, DATE_FORMAT} from "./date";
-import * as Moment from "moment/moment";
 
 export default class WeekPlannerFile {
 	vault: Vault
@@ -71,11 +70,6 @@ export default class WeekPlannerFile {
 		return this.fullFileName == getInboxFileName();
 	}
 
-	isToday() {
-		const d = new Date()
-		return this.fullFileName.endsWith(dateString(moment(d)) + '-' + getWeekday(d) + '.md')
-	}
-
 	isYesterday() {
 		const d = getYesterdayDate()
 		return this.fullFileName.endsWith(dateString(moment(d)) + '-' + getWeekday(d) + '.md')
@@ -128,10 +122,6 @@ export function getDateFromFilename(filename: String): moment.Moment {
 	const dateString = parts[parts.length - 1]
 	const withoutWeekday = dateString.substring(0, dateString.lastIndexOf('-'))
 	return moment(withoutWeekday, DATE_FORMAT).set({hour: 0, minute: 0, second: 0, millisecond: 0})
-}
-
-export function getDayFileHeader(date: Date) {
-	return dateString(moment(date)) + "-" + getWeekday(date)
 }
 
 export function getWeekFileName(m: moment.Moment) {
