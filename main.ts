@@ -140,7 +140,7 @@ export default class WeekPlannerPlugin extends Plugin {
 		let todo = await source.getLineAt(line)
 		if (todo.startsWith(TODO_PREFIX) || todo.startsWith(TODO_DONE_PREFIX)) {
 			await dest.insertAt(todo, 1)
-			await source.deleteLineAt(line)
+			await source.deleteLine(line, todo, editor)
 		}
 	}
 
