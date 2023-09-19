@@ -1,10 +1,10 @@
 {
 	"id": "obsidian-week-planner",
 	"name": "Week Planner",
-	"version": "1.0.0",
+	"version": "0.0.1",
 	"minAppVersion": "0.15.0",
-	"description": "This is a sample plugin for Obsidian. This plugin demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
+	"description": "Week Planner plugin for Obsidian. This plugin defines commands for creating planning documents and moving tasks between them.",
+	"author": "Ralf Wirdemann",
+	"authorUrl": "https://github.com/rwirdemann/obsidian-week-planner",
 	"isDesktopOnly": false
 }
