@@ -1,5 +1,5 @@
 import {EditorPosition, Vault, Editor, Workspace, normalizePath, moment} from 'obsidian';
-import { WEEK_PLANNER_BASE_DIR, WEEK_PLANNER_DAYS_DIR, WEEK_WEEK_DIR } from "./constants";
+import {WEEK_PLANNER_BASE_DIR, WEEK_PLANNER_DAYS_DIR, WEEK_WEEK_DIR} from "./constants";
 import * as path from 'path';
 import {allDaysValid, getWeekday, isWorkingDay, getCalendarWeek, dateString, DATE_FORMAT} from "./date";
 import * as Moment from "moment/moment";
@@ -12,16 +12,17 @@ export default class WeekPlannerFile {
 		this.vault = vault;
 		this.fullFileName = fullFileName
 	}
+
 	async deleteLine(line: number, s: string, editor: Editor) {
-		const from: EditorPosition = { line: line, ch: 0 };
-		
+		const from: EditorPosition = {line: line, ch: 0};
+
 		// replace trailing newline only if the line to delete isn't the last one
 		let delta = 0
 		if (line < editor.lastLine()) {
 			delta = path.sep.length
 		}
 
-		const to: EditorPosition = { line: line, ch: s.length + delta};
+		const to: EditorPosition = {line: line, ch: s.length + delta};
 		editor.replaceRange('', from, to)
 	}
 
@@ -35,16 +36,6 @@ export default class WeekPlannerFile {
 		const todos = filecontents.split('\n')
 		todos.splice(at, 0, line)
 		await this.updateFile(todos.join('\n'));
-	}
-
-	async getTodos() {
-		const filecontent = await this.getFileContents()
-		if (filecontent == undefined) {
-			console.log('could not read file');
-			return []
-		}
-
-		return filecontent.split('\n')
 	}
 
 	async getFileContents() {
@@ -126,17 +117,17 @@ export function getDayFileName(date: Date) {
 	return WEEK_PLANNER_BASE_DIR + '/' + WEEK_PLANNER_DAYS_DIR + '/' + dateString(moment(date)) + "-" + getWeekday(date) + '.md'
 }
 
-export function getDateFromFilename(filename: String) {
+export function getDateFromFilename(filename: String): moment.Moment {
 	if (filename == undefined || filename == '') {
-		return Date()
+		return moment()
 	}
 	const parts = filename.split('/')
 	if (parts.length == 0) {
-		return Date()
+		return moment()
 	}
-	const dateString = parts[parts.length-1]
+	const dateString = parts[parts.length - 1]
 	const withoutWeekday = dateString.substring(0, dateString.lastIndexOf('-'))
-	return Moment(withoutWeekday, DATE_FORMAT)
+	return moment(withoutWeekday, DATE_FORMAT).set({hour: 0, minute: 0, second: 0, millisecond: 0})
 }
 
 export function getDayFileHeader(date: Date) {
@@ -149,17 +140,18 @@ export function getWeekFileName(m: moment.Moment) {
 }
 
 export function getNextWorkingDay() {
-	const date = new Date()
-	while (!isWorkingDay(date)) {
-		date.setDate(date.getDate() + 1);
+	let today = new Date()
+	while (!isWorkingDay(today)) {
+		today.setDate(today.getDate() + 1);
 	}
-	return date
+	return today
 }
 
-export function getTomorrowDate(workingDays: string) {
-	let tomorrow  = moment().add(1,'days');
+export function getTomorrowDate(workingDays: string, date?: moment.Moment) {
+	let today = date !== undefined ? date : moment()
+	let tomorrow = today.add(1, 'days');
 	while (!isWorkingDay(tomorrow.toDate(), workingDays)) {
-		tomorrow  = moment(tomorrow).add(1,'days');
+		tomorrow = moment(tomorrow).add(1, 'days');
 	}
 	return tomorrow.toDate()
 }
