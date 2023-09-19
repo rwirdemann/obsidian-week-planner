@@ -57,6 +57,14 @@ export default class WeekPlannerPlugin extends Plugin {
 			hotkeys: []
 		});
 
+		this.addCommand({
+			id: 'move-to-today',
+			name: 'Move Task to Today',
+			editorCallback: (editor: Editor, view: MarkdownView) => {
+				this.moveToToday(editor)
+			}
+		});
+
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new SampleSettingTab(this.app, this));
 
@@ -99,6 +107,25 @@ export default class WeekPlannerPlugin extends Plugin {
 		await this.createNewNote(yesterday, 'Today', 'Days')
 	}
 
+	async moveToToday(editor: Editor) {
+		let date = new Date()
+		let today = dateString(date) + "-" + getWeekday(date)
+		let fullFileName = 'Week Planner/Days/' + today + ".md"
+
+		let selection = editor.getSelection().replace(/[\r\n]/gm, '');
+
+		let filecontent = await (await this.getFileContents(fullFileName))
+		if (filecontent == undefined) {
+			console.log('could not read file');
+			return
+		}
+
+		let todos = filecontent.split('\n')
+		todos.splice(1, 0, selection)
+		await this.updateFile(fullFileName, todos.join('\n'));
+		editor.replaceSelection('');
+	}
+
 	async createNewNote(input: string, header: string, subdir?: string): Promise<void> {
 		if (typeof subdir !== 'undefined') {
 			const subDirectoryExists = await this.app.vault.adapter.exists('Week Planner/' + subdir);
@@ -125,6 +152,22 @@ export default class WeekPlannerPlugin extends Plugin {
 			await this.app.vault.create(fullFileName + '.md', '## ' + header)
 		}
 		await this.app.workspace.openLinkText(fullFileName, '', false)
+	}
+
+	async getFileContents(fileName: string){
+		try {
+			return await this.app.vault.adapter.read(fileName);
+		} catch (error) {
+			console.log(error)
+		}
+	}
+
+	async updateFile(fileName: string, fileContents: string){
+		try {
+			return await this.app.vault.adapter.write(fileName, fileContents);
+		} catch (error) {
+			console.log(error)
+		}
 	}
 
 	onunload() {
