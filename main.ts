@@ -1,10 +1,9 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import {App, Editor, MarkdownView, Plugin, PluginSettingTab, Setting} from 'obsidian';
 import WeekPlannerFile, {
 	extendFileName,
 	getInboxFileName,
 	getDayFileHeader,
 	getDayFileName,
-	getWeekday,
 	getWeekFileName,
 	weekNumber,
 	getTomorrowDate,
@@ -12,7 +11,7 @@ import WeekPlannerFile, {
 	getCurrentWorkdayDate,
 	isValidWorkingDaysString
 } from "./src/file";
-import { TODO_DONE_PREFIX, TODO_PREFIX } from "./src/constants";
+import {TODO_DONE_PREFIX, TODO_PREFIX} from "./src/constants";
 
 interface WeekPlannerPluginSettings {
 	workingDays: string;
@@ -83,7 +82,6 @@ export default class WeekPlannerPlugin extends Plugin {
 	}
 
 	async createInbox() {
-		const date = new Date()
 		let weekFile = new WeekPlannerFile(this.app.vault, getInboxFileName());
 		await weekFile.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, 'Inbox')
 	}
@@ -172,11 +170,11 @@ class WeekPlannerSettingTab extends PluginSettingTab {
 	}
 
 	display(): void {
-		const { containerEl } = this;
+		const {containerEl} = this;
 
 		containerEl.empty();
 
-		containerEl.createEl('h2', { text: 'Settings forWeek Planner plugin.' });
+		containerEl.createEl('h2', {text: 'Settings forWeek Planner plugin.'});
 
 		new Setting(containerEl)
 			.setName('Working Days')
