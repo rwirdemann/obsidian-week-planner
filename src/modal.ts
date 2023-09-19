@@ -1,23 +1,37 @@
-import {App, Modal, Setting} from "obsidian";
+import {App, DropdownComponent, Modal, Setting} from "obsidian";
 
 export class TodoModal extends Modal {
 	result: string;
-	onSubmit: (result: string) => void;
+	targetList: string
 
-	constructor(app: App, onSubmit: (result: string) => void) {
+	onSubmit: (result: string, targetList: string) => void;
+
+	constructor(app: App, onSubmit: (result: string, targetList: string) => void) {
 		super(app);
 		this.onSubmit = onSubmit;
+		this.targetList = 'inbox'
 	}
 
 	onOpen() {
 		const {contentEl} = this;
 
 		new Setting(contentEl)
-			.setName("Todo")
+			.setName("Decription")
 			.addText((text) =>
 				text.onChange((value) => {
 					this.result = value
-				}));
+				})
+			);
+
+		new Setting(contentEl)
+			.setName("Target list")
+			.addDropdown(dropDown => {
+				dropDown.addOption('inbox', 'Inbox');
+				dropDown.addOption('today', 'Today');
+				dropDown.onChange(async (value) => {
+					this.targetList = value
+				});
+			});
 
 		new Setting(contentEl)
 			.addButton((btn) =>
@@ -26,7 +40,7 @@ export class TodoModal extends Modal {
 					.setCta()
 					.onClick(() => {
 						this.close();
-						this.onSubmit(this.result);
+						this.onSubmit(this.result, this.targetList);
 					}));
 	}
 
