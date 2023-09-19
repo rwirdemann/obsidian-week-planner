@@ -99,70 +99,70 @@ export default class WeekPlannerPlugin extends Plugin {
 	}
 
 	async insertIntoTargetDate(date: Date, todo: string) {
-		let today = new WeekPlannerFile(this.app.vault, getDayFileName(date));
+		let today = new WeekPlannerFile(this.settings, this.app.vault, getDayFileName(this.settings, date));
 		await today.createIfNotExists(this.app.vault, this.app.workspace, 'Inbox')
 		await today.insertAt(todo, 1)
 	}
 
 	async insertIntoInbox(todo: string) {
-		let inbox = new WeekPlannerFile(this.app.vault, getInboxFileName());
+		let inbox = new WeekPlannerFile(this.settings, this.app.vault, getInboxFileName(this.settings));
 		await inbox.createIfNotExists(this.app.vault, this.app.workspace, 'Inbox')
 		await inbox.insertAt(todo, 1)
 	}
 
 	async insertIntoTomorrow(todo: string) {
 		let tomorrow = getTomorrowDate(this.settings.workingDays)
-		let dest = new WeekPlannerFile(this.app.vault, getDayFileName(tomorrow));
+		let dest = new WeekPlannerFile(this.settings, this.app.vault, getDayFileName(this.settings, tomorrow));
 		await dest.createIfNotExists(this.app.vault, this.app.workspace, 'Inbox')
 		await dest.insertAt(todo, 1)
 	}
 
 	async createInbox() {
-		let file = new WeekPlannerFile(this.app.vault, getInboxFileName());
+		let file = new WeekPlannerFile(this.settings, this.app.vault, getInboxFileName(this.settings));
 		await file.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, 'Inbox')
 	}
 
 	async createWeek() {
 		const m = moment()
-		let weekFile = new WeekPlannerFile(this.app.vault, getWeekFileName(m));
+		let weekFile = new WeekPlannerFile(this.settings, this.app.vault, getWeekFileName(this.settings, m));
 		await weekFile.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, 'Goals of Week ' + getCalendarWeek(m))
 	}
 
 	async createToday() {
 		let date = new Date()
-		let file = new WeekPlannerFile(this.app.vault, getDayFileName(date));
+		let file = new WeekPlannerFile(this.settings, this.app.vault, getDayFileName(this.settings, date));
 		await file.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, 'Inbox')
 	}
 
 	async createTomorrow() {
 		let date = getTomorrowDate(this.settings.workingDays)
-		let file = new WeekPlannerFile(this.app.vault, getDayFileName(date));
+		let file = new WeekPlannerFile(this.settings, this.app.vault, getDayFileName(this.settings, date));
 		await file.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, 'Inbox')
 	}
 
 	async createYesterday() {
 		let date = getYesterdayDate()
-		let file = new WeekPlannerFile(this.app.vault, getDayFileName(date));
+		let file = new WeekPlannerFile(this.settings, this.app.vault, getDayFileName(this.settings, date));
 		await file.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, 'Inbox')
 	}
 
 	async moveTask(editor: Editor) {
-		let sourceFileName = extendFileName(this.app.workspace.getActiveFile()?.name)
-		let source = new WeekPlannerFile(this.app.vault, sourceFileName);
+		let sourceFileName = extendFileName(this.settings, this.app.workspace.getActiveFile()?.name)
+		let source = new WeekPlannerFile(this.settings, this.app.vault, sourceFileName);
 
 		let destFileName: string
 		if (source.isInbox() || source.isYesterday()) {
 			// Inbox and yesterday's todos are move to today
-			destFileName = getDayFileName(getNextWorkingDay())
+			destFileName = getDayFileName(this.settings, getNextWorkingDay(this.settings.workingDays))
 		} else {
 			// All other todos are move to the next working day following the day represented by the current file
 			let dateFromFilename = getDateFromFilename(source.fullFileName);
-			destFileName = getDayFileName(getTomorrowDate(this.settings.workingDays, dateFromFilename))
+			destFileName = getDayFileName(this.settings, getTomorrowDate(this.settings.workingDays, dateFromFilename))
 		}
 
 		// Consider to move files from the past also to today
 
-		let dest = new WeekPlannerFile(this.app.vault, destFileName);
+		let dest = new WeekPlannerFile(this.settings, this.app.vault, destFileName);
 		await this.move(editor, source, dest, 'Inbox')
 	}
 
@@ -177,9 +177,9 @@ export default class WeekPlannerPlugin extends Plugin {
 	}
 
 	async moveTaskToInbox(editor: Editor) {
-		let sourceFileName = extendFileName(this.app.workspace.getActiveFile()?.name)
-		let source = new WeekPlannerFile(this.app.vault, sourceFileName);
-		let dest = new WeekPlannerFile(this.app.vault, getInboxFileName());
+		let sourceFileName = extendFileName(this.settings, this.app.workspace.getActiveFile()?.name)
+		let source = new WeekPlannerFile(this.settings, this.app.vault, sourceFileName);
+		let dest = new WeekPlannerFile(this.settings, this.app.vault, getInboxFileName(this.settings));
 		await this.move(editor, source, dest, 'Inbox')
 	}
 
@@ -189,17 +189,17 @@ export default class WeekPlannerPlugin extends Plugin {
 		if (todo.startsWith(TODO_PREFIX) || todo.startsWith(TODO_DONE_PREFIX)) {
 			todo = todo.substring(TODO_PREFIX.length, todo.length)
 			new TodoModal(this.app, 'Move Task', 'Move', todo, (task: string, list: string, date: Date) => {
-				const sourceFileName = extendFileName(this.app.workspace.getActiveFile()?.name)
-				const source = new WeekPlannerFile(this.app.vault, sourceFileName);
+				const sourceFileName = extendFileName(this.settings, this.app.workspace.getActiveFile()?.name)
+				const source = new WeekPlannerFile(this.settings, this.app.vault, sourceFileName);
 
 				if (list == 'inbox') {
 					this.moveTaskToInbox(editor)
 				} else if (list == 'tomorrow') {
 					const tomorrow = getTomorrowDate(this.settings.workingDays)
-					const dest = new WeekPlannerFile(this.app.vault, getDayFileName(tomorrow));
+					const dest = new WeekPlannerFile(this.settings, this.app.vault, getDayFileName(this.settings, tomorrow));
 					this.move(editor, source, dest, 'Inbox')
 				} else if (list == 'target-date') {
-					const dest = new WeekPlannerFile(this.app.vault, getDayFileName(date));
+					const dest = new WeekPlannerFile(this.settings, this.app.vault, getDayFileName(this.settings, date));
 					this.move(editor, source, dest, 'Inbox')
 				}
 			}).open();
