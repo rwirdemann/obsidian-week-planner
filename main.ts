@@ -105,7 +105,7 @@ export default class WeekPlannerPlugin extends Plugin {
 	async insertIntoToday(todo: string) {
 		let date = new Date()
 		let today = new WeekPlannerFile(this.app.vault, getDayFileName(date));
-		await today.createIfNotExists(this.app.vault, this.app.workspace, getDayFileHeader(date))
+		await today.createIfNotExists(this.app.vault, this.app.workspace, 'Inbox')
 		await today.insertAt(todo, 1)
 	}
 
@@ -129,7 +129,7 @@ export default class WeekPlannerPlugin extends Plugin {
 	async createToday() {
 		let date = new Date()
 		let file = new WeekPlannerFile(this.app.vault, getDayFileName(date));
-		await file.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, getDayFileHeader(date))
+		await file.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, 'Inbox')
 	}
 
 	async createTomorrow() {
@@ -141,7 +141,7 @@ export default class WeekPlannerPlugin extends Plugin {
 	async createYesterday() {
 		let date = getYesterdayDate()
 		let file = new WeekPlannerFile(this.app.vault, getDayFileName(date));
-		await file.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, getDayFileHeader(date))
+		await file.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, 'Inbox')
 	}
 
 	async moveTask(editor: Editor) {
