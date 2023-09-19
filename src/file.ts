@@ -23,7 +23,7 @@ export default class WeekPlannerFile {
 	}
 
 	async insertAt(line: string, at: number) {
-		let filecontent = await (await this.getFileContents())
+		let filecontent = await this.getFileContents()
 		if (filecontent == undefined) {
 			console.log('could not read file');
 			return
@@ -35,7 +35,7 @@ export default class WeekPlannerFile {
 	}
 
 	async getTodos() {
-		let filecontent = await (await this.getFileContents())
+		let filecontent = await this.getFileContents()
 		if (filecontent == undefined) {
 			console.log('could not read file');
 			return []
