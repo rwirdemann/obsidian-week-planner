@@ -44,7 +44,7 @@ export default class WeekPlannerPlugin extends Plugin {
 		});
 
 		this.addCommand({
-			id: 'week-planner-today',
+			id: 'week-planner-yesterday',
 			name: 'Show Yesterday',
 			callback: () => this.createYesterday(),
 			hotkeys: []
