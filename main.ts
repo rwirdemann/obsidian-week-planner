@@ -1,4 +1,4 @@
-import {App, Editor, MarkdownView, Plugin, PluginSettingTab, Setting, moment} from 'obsidian';
+import {App, Editor, MarkdownView, Plugin, PluginSettingTab, Setting, moment, Notice} from 'obsidian';
 import WeekPlannerFile, {
 	extendFileName,
 	getInboxFileName,
@@ -12,6 +12,7 @@ import WeekPlannerFile, {
 } from "./src/file";
 import {TODO_DONE_PREFIX, TODO_PREFIX} from "./src/constants";
 import {getCalendarWeek} from "./src/date";
+import {TodoModal} from "./src/modal";
 
 interface WeekPlannerPluginSettings {
 	workingDays: string;
@@ -26,6 +27,16 @@ export default class WeekPlannerPlugin extends Plugin {
 
 	async onload() {
 		await this.loadSettings();
+
+		this.addCommand({
+			id: "add-todo",
+			name: "Add Todo",
+			callback: () => {
+				new TodoModal(this.app, (result) => {
+					new Notice(`Hello, ${result}!`);
+				}).open();
+			},
+		});
 
 		this.addCommand({
 			id: 'week-planner-inbox',
