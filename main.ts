@@ -185,7 +185,6 @@ class WeekPlannerSettingTab extends PluginSettingTab {
 				.setPlaceholder('Mon,Tue,Wed,Thu,Fri')
 				.setValue(this.plugin.settings.workingDays)
 				.onChange(async (value) => {
-					console.log('Secret: ' + value);
 					value = validateOrDefault(value)
 					this.plugin.settings.workingDays = value;
 					await this.plugin.saveSettings();
