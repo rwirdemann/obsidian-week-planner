@@ -6,6 +6,7 @@
 	export let onSubmit: (description: string, list: string, date: Date) => void | Promise<void>;
 
 	export let task;
+	export let buttonLabel;
 
 	let descriptionInput: HTMLInputElement;
 	let todo: {
@@ -62,6 +63,6 @@
 	</div>
 	<hr/>
 	<div>
-		<button type="submit" class="mod-cta">Create</button>
+		<button type="submit" class="mod-cta">{buttonLabel}</button>
 	</div>
 </form>
