@@ -137,7 +137,7 @@ export default class WeekPlannerPlugin extends Plugin {
 	async move(editor: Editor, source: WeekPlannerFile, dest: WeekPlannerFile, header: String) {
 		await dest.createIfNotExists(this.app.vault, this.app.workspace, header)
 		const line = editor.getCursor().line
-		let todo = await source.getLineAt(line)
+		let todo = editor.getLine(line)
 		if (todo.startsWith(TODO_PREFIX) || todo.startsWith(TODO_DONE_PREFIX)) {
 			await dest.insertAt(todo, 1)
 			await source.deleteLine(line, todo, editor)
