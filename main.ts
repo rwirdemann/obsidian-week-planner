@@ -7,7 +7,10 @@ import WeekPlannerFile, {
 	getDayFileName,
 	getWeekday,
 	getWeekFileName,
-	weekNumber
+	weekNumber,
+	getTomorrowDate,
+	getYesterdayDate,
+	getCurrentWorkdayDate
 } from "./src/file";
 import {TODO_DONE_PREFIX, TODO_PREFIX} from "./src/constants";
 
@@ -61,10 +64,10 @@ export default class WeekPlannerPlugin extends Plugin {
 		});
 
 		this.addCommand({
-			id: 'move-to-today',
-			name: 'Move task to today',
+			id: 'move-task',
+			name: 'Move Task',
 			editorCallback: (editor: Editor, view: MarkdownView) => {
-				this.moveToToday(editor)
+				this.moveTask(editor)
 			}
 		});
 
@@ -100,44 +103,43 @@ export default class WeekPlannerPlugin extends Plugin {
 	}
 
 	async createTomorrow() {
-		let date = new Date()
-		date.setDate(date.getDate() + 1);
-		while (!isWorkDay(date)) {
-			date.setDate(date.getDate() + 1);
-		}
-
+		let date = getTomorrowDate()
 		let file = new WeekPlannerFile(this.app.vault, getDayFileName(date));
 		await file.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, getDayFileHeader(date))
 	}
 
 	async createYesterday() {
-		let date = new Date()
-		date.setDate(date.getDate() - 1);
-
-		while (!isWorkDay(date)) {
-			date.setDate(date.getDate() - 1);
-		}
-
+		let date = getYesterdayDate()
 		let file = new WeekPlannerFile(this.app.vault, getDayFileName(date));
 		await file.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, getDayFileHeader(date))
 	}
 
-	async moveToToday(editor: Editor) {
+	async moveTask(editor: Editor) {
 		let sourceFileName = extendFileName(this.app.workspace.getActiveFile()?.name)
-		let todayFileName = getDayFileName(new Date())
-		if (sourceFileName == todayFileName) {
-			return 
-		}
-		console.log('source: ' + sourceFileName)
-		console.log('today: ' + todayFileName)
-		
 		let source = new WeekPlannerFile(this.app.vault, sourceFileName);
-		let today = new WeekPlannerFile(this.app.vault, todayFileName);
+
+		let destFileName = ""
+		let header = ""
+		if (source.isInbox() || source.isYesterday()) {
+			const date = getCurrentWorkdayDate()
+			destFileName = getDayFileName(date)
+			header = getDayFileHeader(date)			
+		} else if (source.isToday()) {
+			const date = getTomorrowDate()
+			destFileName = getDayFileName(getTomorrowDate())
+			header = getDayFileHeader(date)			
+		} else {
+			return
+		}
+
+		let dest = new WeekPlannerFile(this.app.vault, destFileName);
+		await dest.createIfNotExists(this.app.vault, this.app.workspace, header)
+
 		const line = editor.getCursor().line
 		let todo = await source.getLineAt(line)
 		if (todo.startsWith(TODO_PREFIX) || todo.startsWith(TODO_DONE_PREFIX)) {
 			console.log('line: ' + todo)
-			await today.insertAt(todo, 1)
+			await dest.insertAt(todo, 1)
 			await source.deleteLineAt(line)
 		}
 	}
@@ -152,10 +154,6 @@ export default class WeekPlannerPlugin extends Plugin {
 	async saveSettings() {
 		await this.saveData(this.settings);
 	}
-}
-
-function isWorkDay(date: Date) {
-	return date.getDay() > 0 && date.getDay() < 6
 }
 
 class SampleModal extends Modal {

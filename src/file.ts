@@ -60,18 +60,35 @@ export default class WeekPlannerFile {
 		}
 	}
 
-	async createIfNotExistsAndOpen(vault: Vault, workspace: Workspace, header: String) {
+	async createIfNotExists(vault: Vault, workspace: Workspace, header: String) {
 		const fileExists = await vault.adapter.exists(this.fullFileName);
 		if (!fileExists) {
 			await this.ensureDirectories(vault)
 			await vault.create(this.fullFileName, '## ' + header)
 		}
+	}
 
+	async createIfNotExistsAndOpen(vault: Vault, workspace: Workspace, header: String) {
+		this.createIfNotExists(vault, workspace, header)
 		await workspace.openLinkText(this.obsidianFile(this.fullFileName), '', false)
 	}
 
 	obsidianFile(filename: string) {
 		return filename.replace('.md', '');
+	}
+
+	isInbox() {
+		return this.fullFileName.endsWith('Inbox.md')
+	}
+
+	isToday() {
+		const date = new Date()
+		return this.fullFileName.endsWith(dateString(date) + '-' + getWeekday(date) + '.md')
+	}
+
+	isYesterday() {
+		const date = getYesterdayDate()
+		return this.fullFileName.endsWith(dateString(date) + '-' + getWeekday(date) + '.md')
 	}
 
 	async ensureDirectories(vault: Vault, ) {
@@ -136,3 +153,32 @@ export function getWeekday(date: Date) {
 	return weekday[date.getDay()];
 }
 
+export function getCurrentWorkdayDate() {
+	let date = new Date()
+	while (!isWorkDay(date)) {
+		date.setDate(date.getDate() + 1);
+	}
+	return date
+}
+
+export function getTomorrowDate() {
+	let date = new Date()
+	date.setDate(date.getDate() + 1);
+	while (!isWorkDay(date)) {
+		date.setDate(date.getDate() + 1);
+	}
+	return date
+}
+
+export function getYesterdayDate() {
+	let date = new Date()
+	date.setDate(date.getDate() - 1);
+	while (!isWorkDay(date)) {
+		date.setDate(date.getDate() - 1);
+	}
+	return date
+}
+
+function isWorkDay(date: Date) {
+	return date.getDay() > 0 && date.getDay() < 6
+}
