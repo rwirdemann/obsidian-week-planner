@@ -252,7 +252,7 @@ class WeekPlannerSettingTab extends PluginSettingTab {
 				.setPlaceholder('Week Planner')
 				.setValue(this.plugin.settings.baseDir)
 				.onChange(async (value) => {
-					value = validateBaseDirOrDefault(value)
+					value = validateDirectoryOrDefault(value, DEFAULT_SETTINGS.baseDir).trim()
 					this.plugin.settings.baseDir = value;
 					await this.plugin.saveSettings();
 				}));
@@ -264,7 +264,7 @@ class WeekPlannerSettingTab extends PluginSettingTab {
 				.setPlaceholder('Days')
 				.setValue(this.plugin.settings.daysDir)
 				.onChange(async (value) => {
-					value = validateDaysDirOrDefault(value)
+					value = validateDirectoryOrDefault(value, DEFAULT_SETTINGS.daysDir).trim()
 					this.plugin.settings.daysDir = value;
 					await this.plugin.saveSettings();
 				}));
@@ -276,7 +276,7 @@ class WeekPlannerSettingTab extends PluginSettingTab {
 				.setPlaceholder('Weeks')
 				.setValue(this.plugin.settings.weeksDir)
 				.onChange(async (value) => {
-					value = validateWeeksDirOrDefault(value)
+					value = validateDirectoryOrDefault(value, DEFAULT_SETTINGS.weeksDir).trim()
 					this.plugin.settings.weeksDir = value;
 					await this.plugin.saveSettings();
 				}));
@@ -313,27 +313,17 @@ function validateOrDefault(value: string) {
 	return DEFAULT_SETTINGS.workingDays
 }
 
-function validateBaseDirOrDefault(value: string) {
+function validateDirectoryOrDefault(value: string, defaultValue: string) {
 	if (value === undefined || value === '') {
-		console.log('basedir is invalid. using default')
-		return DEFAULT_SETTINGS.baseDir
+		console.log('directory is invalid. using default')
+		return defaultValue
 	}
-	return value
-}
 
-function validateDaysDirOrDefault(value: string) {
-	if (value === undefined || value === '') {
-		console.log('daysdir is invalid. using default')
-		return DEFAULT_SETTINGS.daysDir
+	if (value.contains(':') || value.contains('/') || value.contains('\\')) {
+		console.log('directory contains invalid character')
+		return defaultValue
 	}
-	return value
-}
 
-function validateWeeksDirOrDefault(value: string) {
-	if (value === undefined || value === '') {
-		console.log('weeksdir is invalid. using default')
-		return DEFAULT_SETTINGS.weeksDir
-	}
 	return value
 }
 
