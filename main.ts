@@ -9,7 +9,8 @@ import WeekPlannerFile, {
 	weekNumber,
 	getTomorrowDate,
 	getYesterdayDate,
-	getCurrentWorkdayDate
+	getCurrentWorkdayDate,
+	isValidWorkingDaysString
 } from "./src/file";
 import { TODO_DONE_PREFIX, TODO_PREFIX } from "./src/constants";
 
@@ -18,7 +19,7 @@ interface WeekPlannerPluginSettings {
 }
 
 const DEFAULT_SETTINGS: WeekPlannerPluginSettings = {
-	workingDays: 'Mon,Tue,Wen,Thu,Fri'
+	workingDays: 'Mon,Tue,Wed,Thu,Fri'
 }
 
 export default class WeekPlannerPlugin extends Plugin {
@@ -100,7 +101,7 @@ export default class WeekPlannerPlugin extends Plugin {
 	}
 
 	async createTomorrow() {
-		let date = getTomorrowDate()
+		let date = getTomorrowDate(this.settings.workingDays)
 		let file = new WeekPlannerFile(this.app.vault, getDayFileName(date));
 		await file.createIfNotExistsAndOpen(this.app.vault, this.app.workspace, getDayFileHeader(date))
 	}
@@ -122,8 +123,8 @@ export default class WeekPlannerPlugin extends Plugin {
 			destFileName = getDayFileName(date)
 			header = getDayFileHeader(date)
 		} else if (source.isToday()) {
-			const date = getTomorrowDate()
-			destFileName = getDayFileName(getTomorrowDate())
+			const date = getTomorrowDate(this.settings.workingDays)
+			destFileName = getDayFileName(getTomorrowDate(this.settings.workingDays))
 			header = getDayFileHeader(date)
 		} else {
 			return
@@ -132,7 +133,7 @@ export default class WeekPlannerPlugin extends Plugin {
 		let dest = new WeekPlannerFile(this.app.vault, destFileName);
 		await this.move(editor, source, dest, header)
 	}
-	
+
 	async move(editor: Editor, source: WeekPlannerFile, dest: WeekPlannerFile, header: String) {
 		await dest.createIfNotExists(this.app.vault, this.app.workspace, header)
 		const line = editor.getCursor().line
@@ -179,12 +180,13 @@ class WeekPlannerSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Working Days')
-			.setDesc('Weekdays that should be considered when moving between days or shifting tasks to the next working day. Format: Mon,Tue,Wen,Thu,Fri,Sat,Sun')
+			.setDesc('Weekdays that should be considered when stepping between days or shifting tasks to the next working day. Format: Mon,Tue,Wed,Thu,Fri,Sat,Sun')
 			.addText(text => text
-				.setPlaceholder('Mon,Tue,Wen,Thu,Fri')
+				.setPlaceholder('Mon,Tue,Wed,Thu,Fri')
 				.setValue(this.plugin.settings.workingDays)
 				.onChange(async (value) => {
 					console.log('Secret: ' + value);
+					value = validateOrDefault(value)
 					this.plugin.settings.workingDays = value;
 					await this.plugin.saveSettings();
 				}));
@@ -209,6 +211,16 @@ class WeekPlannerSettingTab extends PluginSettingTab {
 			),
 		);
 	}
+}
+
+function validateOrDefault(value: string) {
+	if (isValidWorkingDaysString(value)) {
+		console.log('working day string is valid')
+		return value
+	}
+
+	console.log('working day string is invalid. using default')
+	return DEFAULT_SETTINGS.workingDays
 }
 
 const createDonateButton = (link: string, img: HTMLElement): HTMLElement => {
