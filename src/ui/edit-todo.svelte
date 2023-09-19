@@ -5,13 +5,15 @@
 
 	export let onSubmit: (description: string, list: string, date: Date) => void | Promise<void>;
 
+	export let task;
+
 	let descriptionInput: HTMLInputElement;
 	let todo: {
 		description: string;
 		list: string;
 		targetDate: string
 	} = {
-		description: '',
+		description: task,
 		list: 'inbox',
 		targetDate: moment().format(DATE_FORMAT)
 	};
