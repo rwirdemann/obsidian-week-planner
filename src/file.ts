@@ -167,7 +167,7 @@ export function getCurrentWorkdayDate() {
 export function getTomorrowDate(workingDays: string) {
 	let tomorrow  = moment().add(1,'days');
 	while (!isWorkDay(tomorrow.toDate(), workingDays)) {
-		tomorrow  = moment().add(1,'days');
+		tomorrow  = moment(tomorrow).add(1,'days');
 	}
 	return tomorrow.toDate()
 }
