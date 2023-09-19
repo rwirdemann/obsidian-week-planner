@@ -31,6 +31,7 @@ The plugin provides a set of commands to mangage this document types:
 - `Show Today` Creates and / or shows the todo list for today
 - `Show Tomorrow` Creates and / or shows the todo list for tomorrow
 - `Show Yesterday` Creates and / or shows the todo list for tomorrow
+- `Show Yesterday` Creates and / or shows the todo list for tomorrow
 
 The `Show Yesterday` and `Show Tomorrow` commands are relevant in order to move uncompleted tasks from yesterday's to
 today's or from today's to tomorrow's todo list.
