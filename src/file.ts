@@ -1,5 +1,5 @@
-import {Vault} from 'obsidian';
-import {WEEK_PLANNER_BASE_DIR, WEEK_PLANNER_DAYS_DIR} from "./constants";
+import {Vault, Workspace} from 'obsidian';
+import {WEEK_PLANNER_BASE_DIR, WEEK_PLANNER_DAYS_DIR, WEEK_WEEK_DIR} from "./constants";
 
 export default class WeekPlannerFile {
 	vault: Vault;
@@ -32,6 +32,7 @@ export default class WeekPlannerFile {
 		todos.splice(at, 0, line)
 		await this.updateFile(todos.join('\n'));
 	}
+
 	async getTodos() {
 		let filecontent = await (await this.getFileContents())
 		if (filecontent == undefined) {
@@ -57,6 +58,19 @@ export default class WeekPlannerFile {
 			console.log(error)
 		}
 	}
+
+	async createIfNotExistsAndOpen(vault: Vault, workspace: Workspace, header: String) {
+		const fileExists = await vault.adapter.exists(this.fullFileName);
+		if (!fileExists) {
+			await vault.create(this.fullFileName, '## ' + header)
+		}
+
+		await workspace.openLinkText(this.obsidianFile(this.fullFileName), '', false)
+	}
+
+	obsidianFile(filename: string) {
+		return filename.replace('.md', '');
+	}
 }
 
 export function getInboxFileName() {
@@ -65,6 +79,17 @@ export function getInboxFileName() {
 
 export function getTodayFileName(date: Date) {
 	return WEEK_PLANNER_BASE_DIR + '/' + WEEK_PLANNER_DAYS_DIR + '/' + dateString(date) + "-" + getWeekday(date) + '.md'
+}
+
+export function getWeekFileName(date: Date) {
+	const year = date.getFullYear()
+	return WEEK_PLANNER_BASE_DIR + '/' + WEEK_WEEK_DIR + '/Calweek-' + year + '-' + weekNumber(date) + '.md'
+}
+
+export function weekNumber(date: Date) {
+	const startDate = new Date(date.getFullYear(), 0, 1);
+	const days = Math.floor((date.valueOf() - startDate.valueOf()) / (24 * 60 * 60 * 1000));
+	return Math.ceil(days / 7);
 }
 
 export function dateString(date: Date) {
