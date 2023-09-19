@@ -65,9 +65,16 @@ export default class MyPlugin extends Plugin {
 			}
 		});
 		this.addCommand({
-      id: 'my-planner-today-note',
-      name: 'Show My Planner Today Note',
-      callback: () => this.createNewNote('my-planner-today'),
+      id: 'week-planner-inbox',
+      name: 'Show Inbox',
+      callback: () => this.createNewNote('Inbox', 'Inbox'),
+      hotkeys: []
+    });
+
+		this.addCommand({
+      id: 'week-planner-today',
+      name: 'Show Today',
+      callback: () => this.createNewNote('2022-09-05-Monday', 'Today', 'Days'),
       hotkeys: []
     });
 
@@ -84,22 +91,32 @@ export default class MyPlugin extends Plugin {
 		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
 	}
 
-	async createNewNote(input: string): Promise<void> {
-		//this.app.workspace.openLinkText('my-planner-today', '', true)
-		//await this.app.vault.createFolder('ZZZ')
+	async createNewNote(input: string, header: string, subdir?: string): Promise<void> {		
+		if (typeof subdir !== 'undefined') {
+			const subDirectoryExists = await this.app.vault.adapter.exists('Week Planner/' + subdir);
+			if (!subDirectoryExists) {
+				await this.app.vault.createFolder('Week Planner/' + subdir)
+			}
+		}
 
-		const directoryPath = 'ZZZ'
+		const directoryPath = 'Week Planner'
     const directoryExists = await this.app.vault.adapter.exists(directoryPath);
 		if (!directoryExists) {
 			await this.app.vault.createFolder(directoryPath)
 		}
 
-		const filePath = 'ZZZ/my-planner-today-3.md'
-		const fileExists = await this.app.vault.adapter.exists(filePath);
-		if (!fileExists) {
-			await this.app.vault.create(filePath, '## Today')
+		var fullFileName = ""
+		if (typeof subdir !== 'undefined') {
+			fullFileName = 'Week Planner/' + subdir + '/' + input
+		} else {
+			fullFileName = 'Week Planner/' + input
 		}
-		this.app.workspace.openLinkText('ZZZ/my-planner-today-3', '', false )
+
+		const fileExists = await this.app.vault.adapter.exists(fullFileName + '.md');
+		if (!fileExists) {
+			await this.app.vault.create(fullFileName + '.md', '## ' + header)
+		}
+		this.app.workspace.openLinkText(fullFileName, '', false )
 	}
 
 	onunload() {
