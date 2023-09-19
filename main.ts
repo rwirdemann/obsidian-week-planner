@@ -43,6 +43,13 @@ export default class WeekPlannerPlugin extends Plugin {
 			hotkeys: []
 		});
 
+		this.addCommand({
+			id: 'week-planner-tomorrow',
+			name: 'Show Tomorrow',
+			callback: () => this.createTomorrow(),
+			hotkeys: []
+		});
+
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new SampleSettingTab(this.app, this));
 
@@ -58,8 +65,15 @@ export default class WeekPlannerPlugin extends Plugin {
 
 	async createToday() {
 		let date = new Date()
-		let today = todayString(date) + "-" + getWeekday(date)
+		let today = dateString(date) + "-" + getWeekday(date)
 		await this.createNewNote(today, 'Today', 'Days')
+	}
+
+	async createTomorrow() {
+		let date = new Date()
+		date.setDate(date.getDate() + 1);
+		let tomorrow = dateString(date) + "-" + getWeekday(date)
+		await this.createNewNote(tomorrow, 'Today', 'Days')
 	}
 
 	async createNewNote(input: string, header: string, subdir?: string): Promise<void> {
@@ -102,7 +116,7 @@ export default class WeekPlannerPlugin extends Plugin {
 	}
 }
 
-function todayString(date: Date) {
+function dateString(date: Date) {
 	return [
 		date.getFullYear(),
 		padTo2Digits(date.getMonth() + 1),
