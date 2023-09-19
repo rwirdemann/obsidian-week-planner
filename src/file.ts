@@ -67,7 +67,7 @@ export default class WeekPlannerFile {
 
 	async createIfNotExistsAndOpen(vault: Vault, workspace: Workspace, header: String) {
 		await this.createIfNotExists(vault, workspace, header)
-		await workspace.openLinkText(this.obsidianFile(this.fullFileName), '', false)
+		await workspace.openLinkText(this.obsidianFile(this.fullFileName), '', true)
 	}
 
 	obsidianFile(filename: string) {
@@ -89,10 +89,10 @@ export default class WeekPlannerFile {
 	}
 
 	async ensureDirectories() {
-		const directories = this.fullFileName.split(path.sep)
+		const directories = this.fullFileName.split('/')
 		let directoryPath = ""
 		for (let i = 0; i < directories.length - 1; i++) {
-			directoryPath = directoryPath + directories[i] + path.sep
+			directoryPath = directoryPath + directories[i] + '/'
 			console.log('dir path:' + directoryPath)
 
 			try {
@@ -110,18 +110,18 @@ export default class WeekPlannerFile {
 
 export function extendFileName(filename?: string) {
 	if (filename == 'Inbox.md') {
-		return WEEK_PLANNER_BASE_DIR + path.sep + 'Inbox.md'
+		return WEEK_PLANNER_BASE_DIR + '/' + 'Inbox.md'
 	} else {
-		return WEEK_PLANNER_BASE_DIR + path.sep + WEEK_PLANNER_DAYS_DIR + path.sep + filename
+		return WEEK_PLANNER_BASE_DIR + '/' + WEEK_PLANNER_DAYS_DIR + '/' + filename
 	}
 }
 
 export function getInboxFileName() {
-	return WEEK_PLANNER_BASE_DIR + path.sep + 'Inbox.md'
+	return WEEK_PLANNER_BASE_DIR + '/' + 'Inbox.md'
 }
 
 export function getDayFileName(date: Date) {
-	return WEEK_PLANNER_BASE_DIR + path.sep + WEEK_PLANNER_DAYS_DIR + path.sep + dateString(date) + "-" + getWeekday(date) + '.md'
+	return WEEK_PLANNER_BASE_DIR + '/' + WEEK_PLANNER_DAYS_DIR + '/' + dateString(date) + "-" + getWeekday(date) + '.md'
 }
 
 export function getDayFileHeader(date: Date) {
@@ -130,7 +130,7 @@ export function getDayFileHeader(date: Date) {
 
 export function getWeekFileName(date: Date) {
 	const year = date.getFullYear()
-	return WEEK_PLANNER_BASE_DIR + '/' + WEEK_WEEK_DIR + path.sep + 'Calweek-' + year + '-' + weekNumber(date) + '.md'
+	return WEEK_PLANNER_BASE_DIR + '/' + WEEK_WEEK_DIR + '/' + 'Calweek-' + year + '-' + weekNumber(date) + '.md'
 }
 
 export function weekNumber(date: Date) {
