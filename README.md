@@ -69,7 +69,7 @@ next day on the day before.
 
 ## Settings
 
-The plugin allows you to define the set of your specific working days accoring to the folling
+The plugin allows you to define the set of your specific working days accoring to the following
 format:
 
 ```
