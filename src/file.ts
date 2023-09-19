@@ -186,8 +186,7 @@ function isWorkDay(date: Date, workingDays?: string) {
 		return date.getDay() > 0 && date.getDay() < 6
 	}
 
-	let allowedDays = map(workingDays)
-	console.log('allowed days:' + allowedDays)
+	let allowedDays = mapToNumbersArray(workingDays)
 	return allowedDays.contains(date.getDay())
 }
 
@@ -201,7 +200,7 @@ const DAYS_TO_NUMBER = new Map<string, number>([
 	['sat', 6],
 ]);
 
-function map(workingDays: string) {
+function mapToNumbersArray(workingDays: string) {
 	const days: number[] = [];
 	workingDays.split(',').forEach((d) => {
 		const day = DAYS_TO_NUMBER.get(d.toLowerCase().trim())
