@@ -1,13 +1,14 @@
 import {App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting} from 'obsidian';
 import WeekPlannerFile, {
 	dateString,
+	extendFileName,
 	getInboxFileName,
 	getTodayFileName,
 	getWeekday,
 	getWeekFileName,
 	weekNumber
 } from "./src/file";
-import {TODO_PREFIX} from "./src/constants";
+import {TODO_DONE_PREFIX, TODO_PREFIX} from "./src/constants";
 
 interface WeekPlannerPluginSettings {
 	mySetting: string;
@@ -99,7 +100,7 @@ export default class WeekPlannerPlugin extends Plugin {
 		}
 
 		let tomorrow = dateString(date) + "-" + getWeekday(date)
-		await this.createNewNote(tomorrow, 'Today', 'Days')
+		await this.createNewNote(tomorrow, tomorrow, 'Days')
 	}
 
 	async createYesterday() {
@@ -115,14 +116,22 @@ export default class WeekPlannerPlugin extends Plugin {
 	}
 
 	async moveToToday(editor: Editor) {
-		let inbox = new WeekPlannerFile(this.app.vault, getInboxFileName());
-		let today = new WeekPlannerFile(this.app.vault, getTodayFileName(new Date()));
-
+		let sourceFileName = extendFileName(this.app.workspace.getActiveFile()?.name)
+		let todayFileName = getTodayFileName(new Date())
+		if (sourceFileName == todayFileName) {
+			return 
+		}
+		console.log('source: ' + sourceFileName)
+		console.log('today: ' + todayFileName)
+		
+		let source = new WeekPlannerFile(this.app.vault, sourceFileName);
+		let today = new WeekPlannerFile(this.app.vault, todayFileName);
 		const line = editor.getCursor().line
-		let todo = await inbox.getLineAt(line)
-		if (todo.startsWith(TODO_PREFIX)) {
+		let todo = await source.getLineAt(line)
+		if (todo.startsWith(TODO_PREFIX) || todo.startsWith(TODO_DONE_PREFIX)) {
+			console.log('line: ' + todo)
 			await today.insertAt(todo, 1)
-			await inbox.deleteLineAt(line)
+			await source.deleteLineAt(line)
 		}
 	}
 
