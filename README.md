@@ -22,37 +22,39 @@ Week Planner
   Inbox
 ```
 
-The plugin provides a set of commands to manage these document types and moves tasks them:
+The basic idea of this plugin is to create and open these documents easily and to move tasks between
+these documents as seamless as possible. These goals are achieved by providing a set of commands: 
 
-- `Show Inbox` Creates and / or shows the inbox note
-- `Show Week` Creates and / or shows the note of the current calendar week
-- `Show Today` Creates and / or shows the todo list for today
-- `Show Tomorrow` Creates and / or shows the todo list for tomorrow
-- `Show Yesterday` Creates and / or shows the todo list for tomorrow
+- `Show Inbox` Creates and / or shows the *inbox* note
+- `Show Week` Creates and / or shows the note of the current calendar *week*
+- `Show Today` Creates and / or shows the todo list for *today*
+- `Show Tomorrow` Creates and / or shows the todo list for *tomorrow*
+- `Show Yesterday` Creates and / or shows the todo list of *yesterday*
 - `Move Task` Moves tasks under cursor to the next work day
+
+All `Show`-Tasks open the relevant document. The document and the underlying folder structure is
+created automatically if it doesn't exist.
+
+The `Show`-commands consider the actual date along with a set of working days. Thus, `Show Today`
+always creates / opens a todo note for the actual date regardless if today is a working day or not.
+But `Show Tomorrow` and `Show Yesterday` consider working days, thus if you trigger `Show Yesterday`
+on a Sunday the todo note of last Friday is created / opened. 
+
+## The Planning Process
 
 The `Move Task`-command supports a fluent planning process by moving tasks of the currently open
 document to the next working day. For instance, if your current document is *inbox* `Move Task` will
-move the task to *today*, but only if today is a working day. If today is a Sunday `Move Task` would
+move the task to *today*, but only if today is a working day. If today is a Sunday `Move Task` will
 move the task to the next Monday. Shifting tasks from *inbox* to *today* comes in handy for your
-daily planning process, when you plan the tasks for today based on the contents of your *inbox*.
+morning planning routine: Open your *inbox* and move all today's task to your todo note of today. Today's note will be created automatically if it doesn't exist.
 
-If your current document is *today* `Move Task` moves a task to the next working day. This becomes
-useful when you finish your work but have unfinished tasks left that you would like to work on
-tomorrow. 
+If your active document is *today* `Move Task` moves a task to the next working day. This becomes
+useful when you finish your work day but have unfinished tasks left that you would like to work on
+tomorrow. Thge tomorrow file will also be created automatically if it doesn't exist.
 
 And finally, if your current document is *yesterday* `Move Task` moves the task to *today*. This
 command is helpful when you didn't finish some of yesterdays tasks and forgot to move them to the
 next day on the day before.
-
-The `Show Yesterday` and `Show Tomorrow` commands are relevant in order to move uncompleted tasks
-from yesterday's to today's or from today's to tomorrow's todo list.
-
-The `Show Tomorrow` and `Show Yesterday`-commands consider workdays, thus if you trigger `Show
-Tomorrow` on a Friday a note for the next Monday is created and opened. Weekdays will be
-configurable in one of the upcoming releases.
-
-The plugin also creates the underlying folder structure if not yet there.
 
 ## Todos
 - [ ] Make working days configurable

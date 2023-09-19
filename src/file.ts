@@ -1,5 +1,5 @@
-import {Vault, Workspace} from 'obsidian';
-import {WEEK_PLANNER_BASE_DIR, WEEK_PLANNER_DAYS_DIR, WEEK_WEEK_DIR} from "./constants";
+import { Vault, Workspace, normalizePath } from 'obsidian';
+import { WEEK_PLANNER_BASE_DIR, WEEK_PLANNER_DAYS_DIR, WEEK_WEEK_DIR } from "./constants";
 import * as path from 'path';
 
 export default class WeekPlannerFile {
@@ -69,7 +69,7 @@ export default class WeekPlannerFile {
 	}
 
 	async createIfNotExistsAndOpen(vault: Vault, workspace: Workspace, header: String) {
-		this.createIfNotExists(vault, workspace, header)
+		await this.createIfNotExists(vault, workspace, header)
 		await workspace.openLinkText(this.obsidianFile(this.fullFileName), '', false)
 	}
 
@@ -91,15 +91,21 @@ export default class WeekPlannerFile {
 		return this.fullFileName.endsWith(dateString(date) + '-' + getWeekday(date) + '.md')
 	}
 
-	async ensureDirectories(vault: Vault, ) {
+	async ensureDirectories(vault: Vault) {
 		const directories = this.fullFileName.split(path.sep)
 		let directoryPath = ""
-		for(let i=0; i < directories.length-1; i++) {
+		for (let i = 0; i < directories.length - 1; i++) {
 			directoryPath = directoryPath + directories[i] + path.sep
 			console.log('dir path:' + directoryPath)
-			const directoryExists = await vault.adapter.exists(directoryPath);
-			if (!directoryExists) {
-				await vault.createFolder(directoryPath)
+
+			try {
+				const normalizedPath = normalizePath(directoryPath);
+				const folderExists = await this.vault.adapter.exists(normalizedPath, false)
+				if (!folderExists) {
+					await this.vault.createFolder(normalizedPath);
+				}
+			} catch (error) {
+				console.log(error)
 			}
 		}
 	}
